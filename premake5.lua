@@ -30,8 +30,8 @@ project (GameName)
 	cppdialect "C++latest"
 	staticruntime "on"
 
-	targetdir ("bin/"..OutputDir.."/%{prj.name}")
-	objdir ("bin-int/"..OutputDir.."/%{prj.name}")
+	targetdir ("Binaries/"..OutputDir.."/%{prj.name}")
+	objdir ("Intermediates/"..OutputDir.."/%{prj.name}")
 
 	pchheader "pch.h"
 	pchsource "%{prj.name}/Source/pch.cpp"
@@ -45,6 +45,9 @@ project (GameName)
 		"%{prj.name}/Source",
 	}
 
+	libdirs {
+	}
+
 	defines {
 		"_CRT_SECURE_NO_WARNINGS",
 	}
@@ -55,8 +58,14 @@ project (GameName)
 		runtime "Debug"
 		symbols "on"
 
+		links {
+		}
+
 	filter "configurations:Release"
 		defines "NDEBUG"
 		buildoptions "/MT"
 		runtime "Release"
 		optimize "on"
+
+		links {
+		}
