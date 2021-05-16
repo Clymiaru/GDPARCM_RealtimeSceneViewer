@@ -22,8 +22,8 @@ OutputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Libraries --
 Libraries = {}
-Libraries["SFML"] = "%{GameName}/Library/SFML"
 Libraries["glad"] = "%{GameName}/Library/glad"
+Libraries["ImGui"] = "%{GameName}/Library/ImGui"
 
 include "App/Library/glad"
 
@@ -42,74 +42,45 @@ project (GameName)
 
 	files {
 		"%{prj.name}/Source/**.h",
-		"%{prj.name}/Source/**.cpp"
+		"%{prj.name}/Source/**.cpp",
+
+		"%{Libraries.ImGui}/imgui.cpp",
+		"%{Libraries.ImGui}/imgui_draw.cpp",
+		"%{Libraries.ImGui}/imgui_tables.cpp",
+		"%{Libraries.ImGui}/imgui_widgets.cpp",
+
 	}
 
 	includedirs {
 		"%{prj.name}/Source",
 		"%{Libraries.glad}",
 		"%{Libraries.SFML}/include",
+		"%{Libraries.ImGui}",
 	}
+
+	filter "files:App/Library/ImGui/**.cpp"
+        flags {"NoPCH"}
 
 	defines {
 		"_CRT_SECURE_NO_WARNINGS",
-		"SFML_STATIC"
 	}
-
-	filter {"platforms:Win64", "configurations:Debug"}
-		libdirs {
-			"%{Libraries.SFML}/lib"
-	    }
-
-    postbuildcommands {
-        ("{COPY} %{prj.location}Library/SFML/bin/openal32.dll %{wks.location}Binaries/"..OutputDir.. "/%{GameName}")
-    }
-
 
 	filter "configurations:Debug"
 		defines "DEBUG"
-		buildoptions "/MDd"
+		buildoptions "/MTd"
 		runtime "Debug"
 		symbols "on"
 
 		links {
 			"glad",
-			"opengl32.lib",
-            "freetype.lib",
-            "winmm.lib",
-            "gdi32.lib",
-            "openal32.lib",
-            "flac.lib",
-            "vorbisenc.lib",
-            "vorbisfile.lib",
-            "vorbis.lib",
-            "ogg.lib",
-            "sfml-audio-s-d.lib",
-            "sfml-graphics-s-d.lib",
-            "sfml-window-s-d.lib",
-            "sfml-system-s-d.lib"
 		}
 
 	filter "configurations:Release"
 		defines "NDEBUG"
-		buildoptions "/MD"
+		buildoptions "/MT"
 		runtime "Release"
 		optimize "on"
 
 		links {
 			"glad",
-			"opengl32.lib",
-            "freetype.lib",
-            "winmm.lib",
-            "gdi32.lib",
-            "openal32.lib",
-            "flac.lib",
-            "vorbisenc.lib",
-            "vorbisfile.lib",
-            "vorbis.lib",
-            "ogg.lib",
-            "sfml-audio-s.lib",
-            "sfml-graphics-s.lib",
-            "sfml-window-s.lib",
-            "sfml-system-s.lib"
 		}

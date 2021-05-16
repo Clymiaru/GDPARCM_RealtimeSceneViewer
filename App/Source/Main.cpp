@@ -1,13 +1,15 @@
 #include "pch.h"
-
 #include <glad.h>
 #include <SFML/Graphics.hpp>
+
+#include <imgui-SFML.h>
+
 
 #include "Utils/Log.h"
 
 int main()
 {
-	sf::Window window(sf::VideoMode(1280, 720),
+	sf::RenderWindow window(sf::VideoMode(1280, 720),
 		"SFML OpenGL(glad) Integration!",
 		sf::Style::Default,
 		sf::ContextSettings(24));
@@ -17,6 +19,8 @@ int main()
 	ASSERT(true, "Window cannot be set to active!");
 	
 	gladLoadGL();
+
+	ImGui::SFML::Init(window);
 	
 	bool isRunning = true;
 	while (isRunning)
@@ -24,6 +28,7 @@ int main()
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
+			ImGui::SFML::ProcessEvent(event);
 			if (event.type == sf::Event::Closed)
 			{
 				isRunning = false;
@@ -35,9 +40,12 @@ int main()
 		}
 
 		// Draw
+		//ImGui::ShowDemoWindow();
+		
 		glClearColor(1.0f, 0.0f, 0.0f ,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
+		ImGui::SFML::Render(window);
 		window.display();
 	}
 }
