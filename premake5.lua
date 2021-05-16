@@ -23,12 +23,9 @@ OutputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Libraries --
 Libraries = {}
 Libraries["glad"] = "%{GameName}/Library/glad"
-Libraries["glfw"] = "%{GameName}/Library/glfw"
-Libraries["glm"] = "%{GameName}/Library/glm"
 Libraries["ImGui"] = "%{GameName}/Library/ImGui"
 
--- include "App/Library/glad"
-include "App/Library/glfw"
+include "App/Library/glad"
 
 project (GameName)
 	location (GameName)
@@ -46,21 +43,26 @@ project (GameName)
 	files {
 		"%{prj.name}/Source/**.h",
 		"%{prj.name}/Source/**.cpp",
+
+		"%{Libraries.ImGui}/imgui.cpp",
+		"%{Libraries.ImGui}/imgui_draw.cpp",
+		"%{Libraries.ImGui}/imgui_tables.cpp",
+		"%{Libraries.ImGui}/imgui_widgets.cpp",
+
 	}
 
 	includedirs {
 		"%{prj.name}/Source",
-		--"%{Libraries.glad}",
-		"%{Libraries.glfw}/include",
+		"%{Libraries.glad}",
+		"%{Libraries.SFML}/include",
+		"%{Libraries.ImGui}",
 	}
 
-	libdirs {
-		"%{Libraries.glfw}/lib",
-	}
+	filter "files:App/Library/ImGui/**.cpp"
+        flags {"NoPCH"}
 
 	defines {
 		"_CRT_SECURE_NO_WARNINGS",
-
 	}
 
 	filter "configurations:Debug"
@@ -70,12 +72,7 @@ project (GameName)
 		symbols "on"
 
 		links {
-			-- "glad",
-			"GLFW",
-			"opengl32.lib",
-			"gdi32.lib",
-			"user32.lib",
-			"shell32.lib"
+			"glad",
 		}
 
 	filter "configurations:Release"
@@ -85,6 +82,5 @@ project (GameName)
 		optimize "on"
 
 		links {
-			-- "glad",
-			"glfw3.lib"
+			"glad",
 		}

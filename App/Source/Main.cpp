@@ -1,23 +1,51 @@
 #include "pch.h"
-#include <GLFW/glfw3.h>
+#include <glad.h>
+#include <SFML/Graphics.hpp>
+
+#include <imgui-SFML.h>
+
+
 #include "Utils/Log.h"
 
 int main()
 {
-	glfwInit();
+	sf::RenderWindow window(sf::VideoMode(1280, 720),
+		"SFML OpenGL(glad) Integration!",
+		sf::Style::Default,
+		sf::ContextSettings(24));
+	window.setVerticalSyncEnabled(true);
 
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "GLFW window", nullptr, nullptr);
-	ASSERT(window != nullptr, "Window cannot be set to active!");
+	LOG("Testing logging!");
+	ASSERT(true, "Window cannot be set to active!");
+	
+	gladLoadGL();
 
-	while (!glfwWindowShouldClose(window))
+	ImGui::SFML::Init(window);
+	
+	bool isRunning = true;
+	while (isRunning)
 	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			ImGui::SFML::ProcessEvent(event);
+			if (event.type == sf::Event::Closed)
+			{
+				isRunning = false;
+			}
+			else if (event.type == sf::Event::Resized)
+			{
+				glViewport(0, 0, event.size.width, event.size.height);
+			}
+		}
+
+		// Draw
+		//ImGui::ShowDemoWindow();
+		
 		glClearColor(1.0f, 0.0f, 0.0f ,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glfwSwapBuffers(window);
-
-		glfwPollEvents();
+		ImGui::SFML::Render(window);
+		window.display();
 	}
-	
-	glfwTerminate();
 }
