@@ -1,6 +1,0 @@
-[submodule "App/Library/glfw"]
-	path = App/Library/glfw
-	url = https://github.com/Clymiaru/glfw.git
-[submodule "App/Library/glm"]
-	path = App/Library/glm
-	url = https://github.com/g-truc/glm.git
