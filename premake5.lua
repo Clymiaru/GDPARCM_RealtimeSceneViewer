@@ -23,9 +23,12 @@ OutputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Libraries --
 Libraries = {}
 Libraries["glad"] = "%{GameName}/Library/glad"
+Libraries["glfw"] = "%{GameName}/Library/glfw"
+Libraries["glm"] = "%{GameName}/Library/glm"
 Libraries["ImGui"] = "%{GameName}/Library/ImGui"
 
 include "App/Library/glad"
+include "App/Library/glfw"
 
 project (GameName)
 	location (GameName)
@@ -43,23 +46,14 @@ project (GameName)
 	files {
 		"%{prj.name}/Source/**.h",
 		"%{prj.name}/Source/**.cpp",
-
-		"%{Libraries.ImGui}/imgui.cpp",
-		"%{Libraries.ImGui}/imgui_draw.cpp",
-		"%{Libraries.ImGui}/imgui_tables.cpp",
-		"%{Libraries.ImGui}/imgui_widgets.cpp",
-
 	}
 
 	includedirs {
 		"%{prj.name}/Source",
 		"%{Libraries.glad}",
-		"%{Libraries.SFML}/include",
-		"%{Libraries.ImGui}",
+		"%{Libraries.glfw}/include",
+		"%{Libraries.glm}",
 	}
-
-	filter "files:App/Library/ImGui/**.cpp"
-        flags {"NoPCH"}
 
 	defines {
 		"_CRT_SECURE_NO_WARNINGS",
@@ -73,6 +67,7 @@ project (GameName)
 
 		links {
 			"glad",
+			"GLFW"
 		}
 
 	filter "configurations:Release"
@@ -83,4 +78,5 @@ project (GameName)
 
 		links {
 			"glad",
+			"GLFW"
 		}
