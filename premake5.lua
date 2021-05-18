@@ -29,6 +29,7 @@ Libraries["ImGui"] = "%{GameName}/Library/ImGui"
 
 include "App/Library/glad"
 include "App/Library/glfw"
+include "App/Library/ImGui"
 
 project (GameName)
 	location (GameName)
@@ -53,10 +54,12 @@ project (GameName)
 		"%{Libraries.glad}",
 		"%{Libraries.glfw}/include",
 		"%{Libraries.glm}",
+		"%{Libraries.ImGui}/include",
 	}
 
 	defines {
 		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
 	}
 
 	filter "configurations:Debug"
@@ -67,7 +70,8 @@ project (GameName)
 
 		links {
 			"glad",
-			"GLFW"
+			"GLFW",
+			"ImGui"
 		}
 
 	filter "configurations:Release"
@@ -78,5 +82,6 @@ project (GameName)
 
 		links {
 			"glad",
-			"GLFW"
+			"GLFW",
+			"ImGui"
 		}
