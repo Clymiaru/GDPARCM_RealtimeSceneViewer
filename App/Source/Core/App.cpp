@@ -34,6 +34,12 @@ void App::Run()
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		/* Render here */
+		// Mesh Rendering
+		// Vertex Buffers, Vertex Arrays, Vertex and Fragments Shaders
+			
+
+
+		// UI Rendering
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
