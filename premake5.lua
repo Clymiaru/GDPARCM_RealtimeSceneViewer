@@ -26,6 +26,7 @@ Libraries["glad"] = "%{GameName}/Library/glad"
 Libraries["glfw"] = "%{GameName}/Library/glfw"
 Libraries["glm"] = "%{GameName}/Library/glm"
 Libraries["ImGui"] = "%{GameName}/Library/ImGui"
+Libraries["tinyObjLoader"] = "%{GameName}/Library/tinyObjLoader"
 
 include "App/Library/glad"
 include "App/Library/glfw"
@@ -55,6 +56,7 @@ project (GameName)
 		"%{Libraries.glfw}/include",
 		"%{Libraries.glm}",
 		"%{Libraries.ImGui}/include",
+		"%{Libraries.tinyObjLoader}",
 	}
 
 	defines {
