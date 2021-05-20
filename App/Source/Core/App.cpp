@@ -9,6 +9,8 @@
 
 #include "Utils/Log.h"
 
+#include "tiny_obj_loader.h"
+
 App::App()
 {
 	InitGlfw();
