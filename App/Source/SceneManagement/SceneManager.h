@@ -4,7 +4,5 @@ class SceneManager final
 {
 public:
 	static SceneManager& GetInstance();
-	~SceneManager();
-
-	void RegisterScene();
+	~SceneManager() = default;
 };
