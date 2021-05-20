@@ -1,15 +1,28 @@
 ﻿#include "pch.h"
 #include "App.h"
-#include <glad.h>
 #include <ImGui/imgui.h>
+
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 #include <ImGui/imgui_impl_opengl3.h>
 #include <ImGui/imgui_impl_glfw.h>
 
 #include "Utils/Log.h"
+#include "ShaderProgramAttachment.h"
 
+
+#define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
+
+
+vector <tinyobj::shape_t> shapes1, shapes2, shapes3; //This vector will hold the MESH data
+
+typedef struct {
+	GLfloat f1;
+	GLfloat f2;
+	GLfloat f3;
+} colorValues;
+
 
 App::App()
 {
