@@ -6,6 +6,11 @@
 #include <glad.h>
 #include <glm/glm.hpp>	
 
+//#define TINYOBJLOADER_IMPLEMENTATION
+//#include "tiny_obj_loader.h"
+
+
+
 // TODO: Link error callbacks
 // TODO: Window encapsulation
 // TODO: Refactor App class
@@ -25,16 +30,11 @@ public:
 
 private:
 	GLFWwindow* m_Window;
-
-	GLuint renderingProgram;
-	GLuint vao[numVAOs];
-	GLuint VBO1, CBO1, EBO1, VBO2, CBO2, EBO2, VBO3, CBO3, EBO3;
-
-	string basepath = "3D_Models/";
-	string inputfile1 = basepath + "teapot.obj"; //enclose the obj filename.type in the string
-	
 	
 	void InitGlfw();
 	void InitGlad();
 	void InitImGui();
+	void LoadColoredOBJ(int order);
+	void InitOBJ(GLFWwindow* window);
+	void DisplayOBJ(GLFWwindow* window);
 };
