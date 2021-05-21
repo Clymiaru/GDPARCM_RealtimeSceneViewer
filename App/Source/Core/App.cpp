@@ -32,11 +32,11 @@ void App::Run()
 		glfwPollEvents();
 		glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		
+
 		/* Render here */
 		// Mesh Rendering
 		// Vertex Buffers, Vertex Arrays, Vertex and Fragments Shaders
-			
+
 
 
 		// UI Rendering
@@ -47,10 +47,10 @@ void App::Run()
 		ImGui::Begin("Demo window");
 		ImGui::Button("Hello!");
 		ImGui::End();
-		
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		
+
 		/* Swap front and back buffers */
 		glfwSwapBuffers(m_Window);
 	}
