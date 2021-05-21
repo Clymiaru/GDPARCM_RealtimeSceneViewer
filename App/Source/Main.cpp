@@ -20,5 +20,8 @@ int main()
 {
 	RealtimeSceneViewer app = RealtimeSceneViewer();
 	app.Run();
+
+
+
 	return 0;
 }
