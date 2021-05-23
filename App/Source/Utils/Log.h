@@ -6,12 +6,12 @@
 #define ASSERT(expectation, errorMessage)																		\
 	if(!(expectation))																							\
 	{																											\
-		std::cout << errorMessage << " [" << __FUNCSIG__ << " " << __FILE__ << " Line:" << __LINE__ << "]\n";	\
+		std::cout << errorMessage << " [" << __FUNCSIG__ << " " << __FILE__ << " Line:" << __LINE__ << "]\n\n";	\
 		__debugbreak();																							\
 	}
 #define LOG(message)																						\
 	{																										\
-		std::cout << message << " [" << __FUNCSIG__ << " " << __FILE__ << " Line:" << __LINE__ << "]\n";	\
+		std::cout << message << " [" << __FUNCSIG__ << " " << __FILE__ << " Line:" << __LINE__ << "]\n\n";	\
 	}
 
 #else
