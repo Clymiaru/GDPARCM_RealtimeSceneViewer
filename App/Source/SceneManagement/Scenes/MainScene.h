@@ -27,8 +27,7 @@ private:
 						   float xSpacing);
 
 	void CreateUnloadSceneButton(int sceneID,
-							     const glm::vec2& size,
-							     std::function<void()> onUnload);
+							     const glm::vec2& size);
 
 	void CreateViewSceneButton(int sceneID,
                                const glm::vec2& size);
@@ -36,17 +35,13 @@ private:
 	void CreatePerSceneLoadingBar(int sceneID,
 								  const glm::vec2& size);
 
-	void CreateAllSceneLoadingBar(const glm::vec2& size);
-
-	void CreateLoadSceneButton(int sceneID,
-                               const glm::vec2& size,
-                               std::function<void()> onLoad);
-
-	bool AreAllScenesLoaded();
+	void CreateAllSceneLoadingBar(const glm::vec2& size) const;
 
 	void ViewAllScenes();
 
 	void ViewScene(int sceneID);
+	void LoadScene(int sceneID);
+	void UnloadScene(int sceneID);
 
 	float m_Progress;
 	float m_Ticks = 0;

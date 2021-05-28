@@ -22,10 +22,11 @@ void SceneManager::RegisterScenes(List<AScene*> scenes)
 		if (foundScene == nullptr)
 		{
 			m_SceneTable[sceneName] = scene;
-			break;
 		}
-		
-		LOG("Scene [" << sceneName.c_str() << "] has already been registered!");
+		else
+		{
+			LOG("Scene [" << sceneName.c_str() << "] has already been registered!");
+		}
 	}
 }
 
