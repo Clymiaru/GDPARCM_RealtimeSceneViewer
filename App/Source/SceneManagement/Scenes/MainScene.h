@@ -30,7 +30,15 @@ private:
 							     const glm::vec2& size,
 							     std::function<void()> onUnload);
 
+	void CreateViewSceneButton(int sceneID,
+                               const glm::vec2& size,
+                               std::function<void()> onView);
+
+	bool AreAllScenesLoaded();
+
+	void ViewAllScenes();
+
 	float m_Progress;
 
-	std::array<bool, 5> m_ScenesLoaded = {true, false, false, false, false};
+	std::array<bool, 5> m_ActiveScenes = {true, false, false, false, false};
 };

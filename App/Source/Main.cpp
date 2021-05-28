@@ -25,8 +25,6 @@ public:
 
 int main()
 {
-	
-	
 	RealtimeSceneViewer app = RealtimeSceneViewer();
 	app.Run();
 
