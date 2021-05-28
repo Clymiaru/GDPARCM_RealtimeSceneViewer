@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <array>
+#include <functional>
 
 #include <glm/vec2.hpp>
 
@@ -24,6 +25,10 @@ private:
 	void CreateSceneButtons(int amountOfScenes,
 						   const glm::vec2& size,
 						   float xSpacing);
+
+	void CreateUnloadSceneButton(int sceneID,
+							     const glm::vec2& size,
+							     std::function<void()> onUnload);
 
 	float m_Progress;
 

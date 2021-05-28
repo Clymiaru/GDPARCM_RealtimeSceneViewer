@@ -87,7 +87,7 @@ void MainScene::CreateSceneButtons(const int amountOfScenes,
 	windowFlags |= ImGuiWindowFlags_NoScrollbar;
 	windowFlags |= ImGuiWindowFlags_NoMove;
 	windowFlags |= ImGuiWindowFlags_NoResize;
-	// windowFlags |= ImGuiWindowFlags_NoBackground;
+	windowFlags |= ImGuiWindowFlags_NoBackground;
 
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
@@ -113,20 +113,22 @@ void MainScene::CreateSceneButtons(const int amountOfScenes,
 		}
 		else
 		{
+			// Close Button
+			CreateUnloadSceneButton(i, {size.x, 30.0f}, [i]()->void { LOG("Scene " << i << " is unloaded!")});
+
+			// Button
 			if (m_ScenesLoaded[i])
 			{
 				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 			}
-			
-			if (ImGui::Button(closeButtonName.c_str(), {size.x, 30.0f}))
+
+			if (ImGui::Button(sceneName.c_str(), {size.x, size.y}))
 			{
-				if (m_ScenesLoaded[i] == false)
+				if (!m_ScenesLoaded[i])
 				{
 					m_ScenesLoaded[i] = true;
 					LOG("Scene " << i << " is loaded!");
-
-					
 				}
 
 				if (m_ScenesLoaded[i])
@@ -134,8 +136,9 @@ void MainScene::CreateSceneButtons(const int amountOfScenes,
 					ImGui::End();
 					break;
 				}
+				LOG("Load!!");
 			}
-		
+
 			if (m_ScenesLoaded[i])
 			{
 				ImGui::PopItemFlag();
@@ -143,7 +146,6 @@ void MainScene::CreateSceneButtons(const int amountOfScenes,
 			}
 		
 			ImGui::End();
-		
 		}
 		
 		
@@ -162,5 +164,38 @@ void MainScene::CreateSceneButtons(const int amountOfScenes,
 		// 	ImGui::End();
 		// }
 		
+	}
+}
+
+void MainScene::CreateUnloadSceneButton(const int sceneID,
+                                        const glm::vec2& size,
+                                        const std::function<void()> onUnload)
+{
+	const String closeButtonName = String("Close##Scene") + std::to_string(sceneID);
+	if (!m_ScenesLoaded[sceneID])
+	{
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	}
+			
+	if (ImGui::Button(closeButtonName.c_str(), {size.x, size.y}))
+	{
+		if (m_ScenesLoaded[sceneID])
+		{
+			m_ScenesLoaded[sceneID] = false;
+			onUnload();
+		}
+
+		if (!m_ScenesLoaded[sceneID])
+		{
+			ImGui::End();
+			return;
+		}
+	}
+		
+	if (!m_ScenesLoaded[sceneID])
+	{
+		ImGui::PopItemFlag();
+		ImGui::PopStyleVar();
 	}
 }
