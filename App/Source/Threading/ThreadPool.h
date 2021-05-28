@@ -33,5 +33,5 @@ private:
 	ActionList pendingActions;
 
 	void run() override;
-	void onFinished(int threadID) override;
+	void OnFinished(int threadID) override;
 };

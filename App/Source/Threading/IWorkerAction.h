@@ -2,6 +2,6 @@
 class IWorkerAction
 {
 public:
-	virtual void onStartTask() = 0;
+	virtual void OnStartTask() = 0;
 };
 

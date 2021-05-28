@@ -12,8 +12,8 @@ public:
 	IETThread();
 	~IETThread();
 
-	void start(); //schedules thread execution
-	static void sleep(int ms);
+	void Start(); //schedules thread execution
+	static void Sleep(int ms);
 
 protected:
 	virtual void run() = 0;

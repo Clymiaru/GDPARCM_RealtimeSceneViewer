@@ -20,13 +20,13 @@ int PoolWorkerThread::getThreadID()
 	return this->id;
 }
 
-void PoolWorkerThread::assignTask(IWorkerAction* action)
+void PoolWorkerThread::AssignTask(IWorkerAction* action)
 {
 	this->action = action;
 }
 
 void PoolWorkerThread::run()
 {
-	this->action->onStartTask();
-	this->finishedTask->onFinished(this->id);
+	this->action->OnStartTask();
+	this->finishedTask->OnFinished(this->id);
 }

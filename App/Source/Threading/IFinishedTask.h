@@ -2,6 +2,6 @@
 class IFinishedTask
 {
 public:
-	virtual void onFinished(int threadID) = 0;
+	virtual void OnFinished(int threadID) = 0;
 };
 

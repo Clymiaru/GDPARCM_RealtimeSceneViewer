@@ -20,7 +20,7 @@ ThreadPool::~ThreadPool()
 void ThreadPool::startScheduler()
 {
 	this->running = true;
-	this->start();
+	this->Start();
 }
 
 void ThreadPool::stopScheduler()
@@ -43,8 +43,8 @@ void ThreadPool::run() {
 				this->inactiveThreads.pop();
 				this->activeThreads[workerThread->getThreadID()] = workerThread;
 
-				workerThread->assignTask(this->pendingActions.front());
-				workerThread->start();
+				workerThread->AssignTask(this->pendingActions.front());
+				workerThread->Start();
 
 				//std::cout << "[ThreadPool " << this->name << "] Scheduled task on ID " << workerThread->getThreadID() << std::endl;
 
@@ -56,7 +56,7 @@ void ThreadPool::run() {
 	}
 }
 
-void ThreadPool::onFinished(int threadID)
+void ThreadPool::OnFinished(int threadID)
 {
 	if (this->activeThreads[threadID] != nullptr) {
 		// create a fresh instance of a thread worker after execution

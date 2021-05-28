@@ -10,7 +10,7 @@ public:
 	~PoolWorkerThread();
 
 	int getThreadID();
-	void assignTask(IWorkerAction* action);
+	void AssignTask(IWorkerAction* action);
 
 private:
 	void run() override;
