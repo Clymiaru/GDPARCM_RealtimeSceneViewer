@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "Mesh.h"
 
+#include "Core/App.h"
+
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
@@ -50,8 +52,19 @@ Mesh::Mesh(const List<float>& vertices,
 
 void Mesh::Draw(const glm::mat4& transform) const
 {
+	glm::mat4 view_projection = glm::perspective(glm::radians(45.0f), (float(App::Width) / float(App::Height)), 0.0001f, 100000.0f);
+	glm::mat4 view;
+
+	view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f));
+
+	view_projection *= view;
+
 	m_Shader->Bind();
 	m_VAO->Bind();
+	m_Shader->SetMat4("transform", transform);
+	m_Shader->SetMat4("view_projection", view_projection);
 	m_ElementBuffer->Bind();
 	glDrawElements(GL_TRIANGLES, m_ElementBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 	m_ElementBuffer->Unbind();

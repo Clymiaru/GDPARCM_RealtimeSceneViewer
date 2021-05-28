@@ -23,6 +23,7 @@ void SceneManager::RegisterScenes(List<AScene*> scenes)
 		{
 			m_SceneTable[sceneName] = scene;
 		}
+
 		else
 		{
 			LOG("Scene [" << sceneName.c_str() << "] has already been registered!");
@@ -43,23 +44,6 @@ void SceneManager::LoadScenes(List<String> sceneNames)
 		AScene* foundScene = m_SceneTable[sceneName];
 		foundScene->Load();
 		m_ActiveScenes.push_back(foundScene);
-	}
-}
-
-// TODO: Load scenes without making them active
-void SceneManager::LoadScenesAsync(List<String> sceneNames)
-{
-	for (String sceneName : sceneNames)
-	{
-		if (IsSceneActive(sceneName))
-		{
-			LOG("Scene [" << sceneName << "] is already loaded!");
-			break;
-		}
-		
-		AScene* foundScene = m_SceneTable[sceneName];
-		foundScene->Load();
-		// m_ActiveScenes.push_back(foundScene);
 	}
 }
 
