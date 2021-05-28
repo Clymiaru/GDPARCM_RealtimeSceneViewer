@@ -6,19 +6,15 @@
 #include <ImGui/imgui_impl_opengl3.h>
 #include <ImGui/imgui_impl_glfw.h>
 
-#include "Utils/Log.h"
+#include "SceneManagement/SceneManager.h"
 
-const String BASEPATH = "Content/3D_Models/";
-const String INPUTFILE1 = "teapot";
+#include "Utils/Log.h"
 
 App::App()
 {
 	InitGlfw();
 	InitGlad();
 	InitImGui();
-
-	m_Shader = new Shader("Content/Shaders/vertShader.glsl",
-                      "Content/Shaders/fragShader.glsl");
 }
 
 App::~App()
@@ -31,9 +27,8 @@ App::~App()
 
 void App::Run()
 {
-	// Load Assests
-	InitOBJ();
-
+	SceneManager::GetInstance().LoadScenes({"MainScene"});
+	
 	while (!glfwWindowShouldClose(m_Window))
 	{
 		/* Poll for and process events */
@@ -42,22 +37,18 @@ void App::Run()
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		/* Render here */
-		DisplayOBJ(this->m_Window);
-
+		
 		/////Render assets/////
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::Begin("Demo window");
-		ImGui::Button("Hello!");
-		ImGui::End();
-		
+		SceneManager::GetInstance().RenderScenesUI();
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		
-		/* Swap front and back buffers */
 		glfwSwapBuffers(m_Window);
 	}
 }
@@ -73,7 +64,7 @@ void App::InitGlfw()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	m_Window = glfwCreateWindow(600, 600, "Hello World", NULL, NULL);
+	m_Window = glfwCreateWindow(1280, 720, "Hello World", nullptr, nullptr);
 
 	ASSERT(m_Window != nullptr,
 			"Window cannot be created!");
@@ -98,16 +89,3 @@ void App::InitImGui()
 	ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
 	ImGui_ImplOpenGL3_Init((char *)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
 }
-
-void App::InitOBJ()
-{
-	m_Mesh = Mesh::Load(BASEPATH, INPUTFILE1, *m_Shader);
-}
-
-void App::DisplayOBJ(GLFWwindow* window)
-{
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	m_Mesh->Draw(glm::mat4());
-}
-
-

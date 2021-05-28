@@ -32,7 +32,4 @@ private:
 	void InitGlfw();
 	void InitGlad();
 	void InitImGui();
-	void LoadColoredOBJ(int order);
-	void InitOBJ();
-	void DisplayOBJ(GLFWwindow* window);
 };

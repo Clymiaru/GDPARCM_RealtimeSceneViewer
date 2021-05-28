@@ -8,17 +8,26 @@ public:
 	explicit AScene(StringRef name);
 	virtual ~AScene() = default;
 
-	void LoadResources();
-	virtual void LoadResourcesImpl() = 0;
-	virtual void CreateEntities() = 0;
+	void Load();
+	void Unload();
 
-	virtual void Initialize() = 0;
-	virtual void Deinitialize() = 0;
-	
-	virtual void DestroyEntities() = 0;
-	virtual void UnloadResources() = 0;
+	virtual void RenderUI() = 0;
 	
 	StringRef GetName() const;
 private:
+	// TODO: Ask how to determine how to load the resources
+	// Most friendly way would be to store the filenames in the file
+	// and read that to determine the resources to load
+	
+	// Another way is to just hardcode the resources to load
+
+	// Idea:
+	// We can have a manager to store all meshes
+	// So that any meshes that are common would not need to be loaded anymore
+	
+	virtual void LoadResources() = 0;
+	
+	virtual void UnloadResources() = 0;
+	
 	String m_Name;
 };
