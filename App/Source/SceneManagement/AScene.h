@@ -27,7 +27,6 @@ private:
 	// So that any meshes that are common would not need to be loaded anymore
 	
 	virtual void LoadResources() = 0;
-	
 	virtual void UnloadResources() = 0;
 	
 	String m_Name;

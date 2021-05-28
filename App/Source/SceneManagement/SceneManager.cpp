@@ -45,6 +45,23 @@ void SceneManager::LoadScenes(List<String> sceneNames)
 	}
 }
 
+// TODO: Load scenes without making them active
+void SceneManager::LoadScenesAsync(List<String> sceneNames)
+{
+	for (String sceneName : sceneNames)
+	{
+		if (IsSceneActive(sceneName))
+		{
+			LOG("Scene [" << sceneName << "] is already loaded!");
+			break;
+		}
+		
+		AScene* foundScene = m_SceneTable[sceneName];
+		foundScene->Load();
+		// m_ActiveScenes.push_back(foundScene);
+	}
+}
+
 void SceneManager::UnloadScenes(List<String> sceneNames)
 {
 	for (String sceneName : sceneNames)
