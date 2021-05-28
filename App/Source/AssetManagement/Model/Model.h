@@ -6,11 +6,15 @@ class Model final : public Asset
 {
 public:
 	Model(StringRef name,
-		  StringRef filepath);
+		  StringRef filepath,
+		  StringRef basePath,
+		  Shader& shader,
+		  StringRef sceneOwner);
 	~Model() override;
 	MAKE_ASSET(Model)
 
-	Mesh& GetMesh();
+	Mesh& GetMesh() const;
 private:
+	String m_SceneOwner;
 	Mesh* m_MeshData;
 };

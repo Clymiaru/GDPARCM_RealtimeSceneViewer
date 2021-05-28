@@ -1,6 +1,6 @@
 #pragma once
 #include "Asset.h"
-
+#include "Utils/Log.h"
 using AssetTable = HashTable<String, Asset*>;
 
 class AssetManager final
@@ -13,10 +13,11 @@ public:
 	
 	static AssetManager& GetInstance();
 	~AssetManager();
-	
-	template <typename Resource>
+
+	template <typename Resource, typename ...Args>
 	void Load(StringRef name,
-	          StringRef filepath);
+	          StringRef filepath,
+			  Args&& ... args);
 
 	template <typename Resource>
 	void Unload(StringRef name);
@@ -24,23 +25,21 @@ public:
 	template <typename Resource>
 	Resource& Acquire(StringRef name);
 
-	int GetCurrentLoadedAsyncAssets() const;
-	int GetMaxAsyncAssets() const;
 private:
 	AssetManager();
 	HashTable<AssetTag, AssetTable> m_AssetStorage;
 };
 
-template <typename Resource>
+template <typename Resource, typename ...Args>
 void AssetManager::Load(StringRef name,
-                       StringRef filepath)
+                       StringRef filepath,
+						Args&& ... args)
 {
 	auto& selectedAssetStorage = m_AssetStorage[Resource::GetStaticTag()];
 	const auto found           = selectedAssetStorage.find(name);
 	if (found == selectedAssetStorage.end())
-		selectedAssetStorage[name] = new Resource(name, filepath);
+		selectedAssetStorage[name] = new Resource(name, filepath, std::forward<Args>(args) ...);
 	ASSERT(found == selectedAssetStorage.end(),
-	       AssetSystem,
 	       Resource::GetStaticTag() << " (" << name << ") has already been loaded!")
 }
 
@@ -50,7 +49,6 @@ void AssetManager::Unload(StringRef name)
 	auto& selectedAssetStorage = m_AssetStorage[Resource::GetStaticTag()];
 	const auto found           = selectedAssetStorage.find(name);
 	ASSERT(found != selectedAssetStorage.end(),
-	       AssetSystem,
 	       "Attempted to delete a non-existent " << Resource::GetStaticTag() << " (" << name << ")!")
 	auto* deletedAsset = selectedAssetStorage[name];
 	selectedAssetStorage.erase(name);
@@ -63,7 +61,6 @@ Resource& AssetManager::Acquire(StringRef name)
 	auto& selectedAssetStorage = m_AssetStorage[Resource::GetStaticTag()];
 	auto* found                = selectedAssetStorage[name];
 	ASSERT(found != nullptr,
-	       AssetSystem,
 	       Resource::GetStaticTag() << " (" << name << ") does not exist!")
 	INFO_LOG(AssetSystem,
 	         name << " (" << Resource::GetStaticTag() << ") has been acquired.")
