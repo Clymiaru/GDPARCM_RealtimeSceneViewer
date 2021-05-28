@@ -62,7 +62,5 @@ Resource& AssetManager::Acquire(StringRef name)
 	auto* found                = selectedAssetStorage[name];
 	ASSERT(found != nullptr,
 	       Resource::GetStaticTag() << " (" << name << ") does not exist!")
-	INFO_LOG(AssetSystem,
-	         name << " (" << Resource::GetStaticTag() << ") has been acquired.")
 	return *static_cast<Resource*>(found);
 }
