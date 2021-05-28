@@ -45,10 +45,12 @@ void MainScene::RenderUI()
 
 void MainScene::LoadResources()
 {
+
 }
 
 void MainScene::UnloadResources()
 {
+	 
 }
 
 void MainScene::CreateViewAllButton(const glm::vec2& size,

@@ -35,7 +35,8 @@ App::~App()
 void App::Run()
 {
 	SceneManager::GetInstance().LoadScenes({"MainScene"});
-	
+	SceneManager::GetInstance().LoadScenes({ "FirstScene" });
+
 	while (!glfwWindowShouldClose(m_Window))
 	{
 		glfwPollEvents();
