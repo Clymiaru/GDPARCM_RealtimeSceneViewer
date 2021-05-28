@@ -1,15 +1,14 @@
 ﻿#include "pch.h"
 #include "App.h"
-#include <glad.h>
 #include <ImGui/imgui.h>
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 #include <ImGui/imgui_impl_opengl3.h>
 #include <ImGui/imgui_impl_glfw.h>
 
-#include "Utils/Log.h"
+#include "SceneManagement/SceneManager.h"
 
-#include "tiny_obj_loader.h"
+#include "Utils/Log.h"
 
 App::App()
 {
@@ -28,6 +27,8 @@ App::~App()
 
 void App::Run()
 {
+	SceneManager::GetInstance().LoadScenes({"MainScene"});
+	
 	while (!glfwWindowShouldClose(m_Window))
 	{
 		/* Poll for and process events */
@@ -36,18 +37,18 @@ void App::Run()
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		/* Render here */
+		
+		/////Render assets/////
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::Begin("Demo window");
-		ImGui::Button("Hello!");
-		ImGui::End();
-		
+		SceneManager::GetInstance().RenderScenesUI();
+
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		
-		/* Swap front and back buffers */
 		glfwSwapBuffers(m_Window);
 	}
 }
@@ -63,7 +64,7 @@ void App::InitGlfw()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	m_Window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	m_Window = glfwCreateWindow(1280, 720, "Hello World", nullptr, nullptr);
 
 	ASSERT(m_Window != nullptr,
 			"Window cannot be created!");
