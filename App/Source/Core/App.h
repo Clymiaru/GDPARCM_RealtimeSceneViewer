@@ -20,7 +20,10 @@
 class App
 {
 public:
-	App();
+	static Uint Width;
+	static Uint Height;
+	
+	App(Uint width, Uint height);
 	virtual ~App();
 	void Run();
 

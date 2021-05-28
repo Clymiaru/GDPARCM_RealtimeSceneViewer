@@ -7,6 +7,8 @@
 
 #include <glm/vec2.hpp>
 
+#include "Core/App.h"
+
 #include "Utils/Log.h"
 
 MainScene::MainScene() :
@@ -37,9 +39,10 @@ void MainScene::RenderUI()
 	//		Must only be visible if there are actual loading process
 	
 	CreateViewAllButton({150.0f, 60.0f}, 25.0f);
+	
 	for (int i = 0; i < 5; i++)
 	{
-		CreateSceneButton(i, {100.0f, 100.0f}, 25.0f);
+		CreateSceneButton(i, {150.0f, 150.0f}, 50.0f);
 	}
 }
 
@@ -84,9 +87,14 @@ void MainScene::CreateSceneButton(int sceneID,
 	viewAllButtonFlags |= ImGuiWindowFlags_NoBackground;
 
 	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2( main_viewport->WorkPos.x + (size.x + xSpacing) * sceneID,
+
+	const float halfScreenSizeX = App::Width / 2.0f;
+	const float sizeXAndSpacingX       = size.x + xSpacing;
+	
+	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + halfScreenSizeX - (sizeXAndSpacingX * 2 + sizeXAndSpacingX / 2) + sizeXAndSpacingX * sceneID,
                                    main_viewport->WorkPos.y + 30.0f),
                                      ImGuiCond_Once);
+	
 	String windowName = String("Scene##") + std::to_string(sceneID);
 	ImGui::Begin((windowName + "Window").c_str(), nullptr, viewAllButtonFlags);
 	{
