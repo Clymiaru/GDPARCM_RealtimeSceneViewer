@@ -1,13 +1,20 @@
 #include "pch.h"
 #include "Core/App.h"
 
+#include "SceneManagement/SceneManager.h"
+#include "SceneManagement/Scenes/MainScene.h"
+
 class RealtimeSceneViewer final : public App
 {
 public:
 	RealtimeSceneViewer() :
-		App()
+		App(1280, 720)
 	{
 		// App specific initialization
+		SceneManager::GetInstance().RegisterScenes(
+        {
+			new MainScene()
+        });
 	}
 
 	~RealtimeSceneViewer() override
@@ -20,5 +27,6 @@ int main()
 {
 	RealtimeSceneViewer app = RealtimeSceneViewer();
 	app.Run();
+
 	return 0;
 }
