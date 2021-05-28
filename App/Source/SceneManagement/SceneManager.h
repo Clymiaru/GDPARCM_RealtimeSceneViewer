@@ -16,6 +16,7 @@ public:
 	void UnloadScenes(List<String> sceneNames);
 
 	void RenderScenesUI();
+	void RenderScenesMeshes();
 
 private:
 	List<AScene*> m_ActiveScenes;

@@ -69,6 +69,14 @@ void SceneManager::RenderScenesUI()
 	}
 }
 
+void SceneManager::RenderScenesMeshes()
+{
+	for (AScene* activeScene : m_ActiveScenes)
+	{
+		activeScene->RenderMeshes();
+	}
+}
+
 AScene* SceneManager::GetSceneOfName(StringRef sceneName)
 {
 	return m_SceneTable[sceneName]; 

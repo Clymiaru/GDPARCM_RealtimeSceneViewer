@@ -39,12 +39,11 @@ void App::Run()
 	while (!glfwWindowShouldClose(m_Window))
 	{
 		glfwPollEvents();
+	
 		glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		/* Render here */
-		
-		/////Render assets/////
+		SceneManager::GetInstance().RenderScenesMeshes();
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -76,7 +75,6 @@ void App::InitGlfw()
 			"Window cannot be created!");
 
 	glfwMakeContextCurrent(m_Window);
-	
 }
 
 void App::InitGlad()
@@ -86,7 +84,7 @@ void App::InitGlad()
 			"GLAD cannot be initialized!");
 }
 
-void App::InitImGui()
+void App::InitImGui() const
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

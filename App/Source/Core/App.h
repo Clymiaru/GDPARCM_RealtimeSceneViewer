@@ -33,6 +33,6 @@ private:
 	Mesh* m_Mesh;
 	
 	void InitGlfw();
-	void InitGlad();
-	void InitImGui();
+	static void InitGlad();
+	void InitImGui() const;
 };

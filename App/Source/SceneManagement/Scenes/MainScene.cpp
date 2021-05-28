@@ -4,12 +4,24 @@
 #include <string>
 
 #include <ImGui/imgui.h>
+#include <ImGui/imgui_internal.h>
 
 #include <glm/vec2.hpp>
 
 #include "Core/App.h"
 
 #include "Utils/Log.h"
+
+// UI needed to render:
+    // * Global loading bar for all assets to load
+    // * View all button
+    // Concerning 5 scenes
+    // * 5 Scenes view button
+    //		Must be clickable only when loading is complete
+    // * 5 Scenes close button
+    //		Can't be selected or view if loading bar is still present
+    // * 5 Scenes loading bar
+    //		Must only be visible if there are actual loading process
 
 MainScene::MainScene() :
 	AScene{STRINGIFY(MainScene)},
@@ -21,29 +33,18 @@ MainScene::~MainScene()
 {
 }
 
-void MainScene::LoadResources()
+void MainScene::RenderMeshes()
 {
 }
 
 void MainScene::RenderUI()
 {
-	// UI needed to render:
-	// * Global loading bar for all assets to load
-	// * View all button
-	// Concerning 5 scenes
-	// * 5 Scenes view button
-	//		Must be clickable only when loading is complete
-	// * 5 Scenes close button
-	//		Can't be selected or view if loading bar is still present
-	// * 5 Scenes loading bar
-	//		Must only be visible if there are actual loading process
-	
 	CreateViewAllButton({150.0f, 60.0f}, 25.0f);
-	
-	for (int i = 0; i < 5; i++)
-	{
-		CreateSceneButton(i, {150.0f, 150.0f}, 50.0f);
-	}
+	CreateSceneButtons(5, {150.0f, 150.0f}, 50.0f);
+}
+
+void MainScene::LoadResources()
+{
 }
 
 void MainScene::UnloadResources()
@@ -53,19 +54,20 @@ void MainScene::UnloadResources()
 void MainScene::CreateViewAllButton(const glm::vec2& size,
 									float spacing)
 {
-	ImGuiWindowFlags viewAllButtonFlags = 0;
-	viewAllButtonFlags |= ImGuiWindowFlags_NoTitleBar;
-	viewAllButtonFlags |= ImGuiWindowFlags_NoScrollbar;
-	viewAllButtonFlags |= ImGuiWindowFlags_NoMove;
-	viewAllButtonFlags |= ImGuiWindowFlags_NoResize;
-	viewAllButtonFlags |= ImGuiWindowFlags_NoBackground;
+	ImGuiWindowFlags windowFlags = 0;
+	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
+	windowFlags |= ImGuiWindowFlags_NoTitleBar;
+	windowFlags |= ImGuiWindowFlags_NoScrollbar;
+	windowFlags |= ImGuiWindowFlags_NoMove;
+	windowFlags |= ImGuiWindowFlags_NoResize;
+	windowFlags |= ImGuiWindowFlags_NoBackground;
 
-	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + main_viewport->Size.x - size.x - spacing,
-                                   main_viewport->WorkPos.y + main_viewport->Size.y - size.y - spacing),
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->Size.x - size.x - spacing,
+                                   viewport->WorkPos.y + viewport->Size.y - size.y - spacing),
 									 ImGuiCond_Once);
 	
-	ImGui::Begin("MainSceneViewAllArea", nullptr, viewAllButtonFlags);
+	ImGui::Begin("ViewAllButton", nullptr, windowFlags);
 	{
 		if (ImGui::Button("View All", {size.x, size.y}))
 		{
@@ -75,33 +77,90 @@ void MainScene::CreateViewAllButton(const glm::vec2& size,
 	ImGui::End();
 }
 
-void MainScene::CreateSceneButton(int sceneID,
-								  const glm::vec2& size,
-								  float xSpacing)
+void MainScene::CreateSceneButtons(const int amountOfScenes,
+								   const glm::vec2& size,
+								   const float xSpacing)
 {
-	ImGuiWindowFlags viewAllButtonFlags = 0;
-	viewAllButtonFlags |= ImGuiWindowFlags_NoTitleBar;
-	viewAllButtonFlags |= ImGuiWindowFlags_NoScrollbar;
-	viewAllButtonFlags |= ImGuiWindowFlags_NoMove;
-	viewAllButtonFlags |= ImGuiWindowFlags_NoResize;
-	viewAllButtonFlags |= ImGuiWindowFlags_NoBackground;
+	ImGuiWindowFlags windowFlags = 0;
+	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
+	windowFlags |= ImGuiWindowFlags_NoTitleBar;
+	windowFlags |= ImGuiWindowFlags_NoScrollbar;
+	windowFlags |= ImGuiWindowFlags_NoMove;
+	windowFlags |= ImGuiWindowFlags_NoResize;
+	// windowFlags |= ImGuiWindowFlags_NoBackground;
 
-	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	const float halfScreenSizeX = App::Width / 2.0f;
-	const float sizeXAndSpacingX       = size.x + xSpacing;
-	
-	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + halfScreenSizeX - (sizeXAndSpacingX * 2 + sizeXAndSpacingX / 2) + sizeXAndSpacingX * sceneID,
-                                   main_viewport->WorkPos.y + 30.0f),
-                                     ImGuiCond_Once);
-	
-	String windowName = String("Scene##") + std::to_string(sceneID);
-	ImGui::Begin((windowName + "Window").c_str(), nullptr, viewAllButtonFlags);
+	const float widthWithXSpacing       = size.x + xSpacing;
+	const float widthEdgeToMiddleButtonCenter = widthWithXSpacing * (amountOfScenes / 2) + widthWithXSpacing / 2;
+
+	for (int i = 0; i < amountOfScenes; i++)
 	{
-		if (ImGui::Button(windowName.c_str(), {size.x, size.y}))
+		String windowName         = String("SceneWindow##") + std::to_string(i);
+		String sceneName          = String("Scene ") + std::to_string(i);
+		String closeButtonName    = String("Close##Scene") + std::to_string(i);
+		
+		const float uiElementPosX = halfScreenSizeX - widthEdgeToMiddleButtonCenter + widthWithXSpacing * i;
+
+		ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + uiElementPosX,
+                                   viewport->WorkPos.y + 30.0f),
+                                     ImGuiCond_Once);
+
+		if(!ImGui::Begin(windowName.c_str(), &m_ScenesLoaded[i], windowFlags))
 		{
-			// Button press action
+			ImGui::End();
 		}
+		else
+		{
+			if (m_ScenesLoaded[i])
+			{
+				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+			}
+			
+			if (ImGui::Button(closeButtonName.c_str(), {size.x, 30.0f}))
+			{
+				if (m_ScenesLoaded[i] == false)
+				{
+					m_ScenesLoaded[i] = true;
+					LOG("Scene " << i << " is loaded!");
+
+					
+				}
+
+				if (m_ScenesLoaded[i])
+				{
+					ImGui::End();
+					break;
+				}
+			}
+		
+			if (m_ScenesLoaded[i])
+			{
+				ImGui::PopItemFlag();
+				ImGui::PopStyleVar();
+			}
+		
+			ImGui::End();
+		
+		}
+		
+		
+		// if (!ImGui::Begin(windowName.c_str(), &m_ScenesLoaded[i], windowFlags))
+		// {
+		// 	LOG("Close!!");
+		// 	ImGui::End();
+		// }
+		// else
+		// {
+		// 	if (ImGui::Button(sceneName.c_str(), {size.x, size.y}))
+		// 	{
+		// 		// Load scene
+		// 		LOG("Load!!");
+		// 	}
+		// 	ImGui::End();
+		// }
+		
 	}
-	ImGui::End();
 }

@@ -11,6 +11,7 @@ public:
 	void Load();
 	void Unload();
 
+	virtual void RenderMeshes() = 0;
 	virtual void RenderUI() = 0;
 	
 	StringRef GetName() const;
