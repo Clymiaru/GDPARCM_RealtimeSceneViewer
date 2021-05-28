@@ -8,7 +8,7 @@ class RealtimeSceneViewer final : public App
 {
 public:
 	RealtimeSceneViewer() :
-		App()
+		App(1280, 720)
 	{
 		// App specific initialization
 		SceneManager::GetInstance().RegisterScenes(
@@ -25,8 +25,6 @@ public:
 
 int main()
 {
-	
-	
 	RealtimeSceneViewer app = RealtimeSceneViewer();
 	app.Run();
 

@@ -20,7 +20,10 @@
 class App
 {
 public:
-	App();
+	static Uint Width;
+	static Uint Height;
+	
+	App(Uint width, Uint height);
 	virtual ~App();
 	void Run();
 
@@ -30,6 +33,6 @@ private:
 	Mesh* m_Mesh;
 	
 	void InitGlfw();
-	void InitGlad();
-	void InitImGui();
+	static void InitGlad();
+	void InitImGui() const;
 };

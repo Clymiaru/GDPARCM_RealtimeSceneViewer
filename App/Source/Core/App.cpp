@@ -10,8 +10,15 @@
 
 #include "Utils/Log.h"
 
-App::App()
+Uint App::Width;
+Uint App::Height;
+
+App::App(const Uint width,
+         const Uint height)
 {
+	Width = width;
+	Height = height;
+	
 	InitGlfw();
 	InitGlad();
 	InitImGui();
@@ -31,14 +38,12 @@ void App::Run()
 	
 	while (!glfwWindowShouldClose(m_Window))
 	{
-		/* Poll for and process events */
 		glfwPollEvents();
-		glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
+	
+		glClearColor(0.0f, 0.0f, 0.1f, 1.00f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		
-		/* Render here */
-		
-		/////Render assets/////
+		SceneManager::GetInstance().RenderScenesMeshes();
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -64,13 +69,12 @@ void App::InitGlfw()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	m_Window = glfwCreateWindow(1280, 720, "Hello World", nullptr, nullptr);
+	m_Window = glfwCreateWindow(Width, Height, "Realtime Scene Viewer", nullptr, nullptr);
 
 	ASSERT(m_Window != nullptr,
 			"Window cannot be created!");
 
 	glfwMakeContextCurrent(m_Window);
-	
 }
 
 void App::InitGlad()
@@ -80,7 +84,7 @@ void App::InitGlad()
 			"GLAD cannot be initialized!");
 }
 
-void App::InitImGui()
+void App::InitImGui() const
 {
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

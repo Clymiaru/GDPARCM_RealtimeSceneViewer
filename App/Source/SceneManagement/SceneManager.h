@@ -12,10 +12,14 @@ public:
 	// TODO: Ask if all the scenes will be loaded all at once
 
 	void RegisterScenes(List<AScene*> scenes);
+	
 	void LoadScenes(List<String> sceneNames);
+	void LoadScenesAsync(List<String> sceneNames);
+	
 	void UnloadScenes(List<String> sceneNames);
 
 	void RenderScenesUI();
+	void RenderScenesMeshes();
 
 private:
 	List<AScene*> m_ActiveScenes;
