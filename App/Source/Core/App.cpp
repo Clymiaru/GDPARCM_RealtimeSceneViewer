@@ -34,7 +34,7 @@ App::~App()
 
 void App::Run()
 {
-	SceneManager::GetInstance().LoadScenes({"MainScene", "FirstScene"});
+	SceneManager::GetInstance().LoadScenes({"MainScene", "Scene0", "Scene1", "Scene2" , "Scene3" , "Scene4" });
 	double now = glfwGetTime();
 	double prev = 0.0;
 	

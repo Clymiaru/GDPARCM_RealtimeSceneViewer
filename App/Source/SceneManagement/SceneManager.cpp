@@ -38,7 +38,7 @@ void SceneManager::LoadScenes(List<String> sceneNames)
 		if (IsSceneActive(sceneName))
 		{
 			LOG("Scene [" << sceneName << "] is already loaded!");
-			break;
+			continue;
 		}
 		
 		AScene* foundScene = m_SceneTable[sceneName];

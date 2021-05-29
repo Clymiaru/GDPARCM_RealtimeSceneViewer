@@ -43,7 +43,7 @@ MainScene::~MainScene()
 
 void MainScene::RenderMeshes()
 {
-	this->mesh->Draw(m_Camera->GetViewProjectionMatrix());
+	//this->mesh->Draw(m_Camera->GetViewProjectionMatrix());
 }
 
 void MainScene::RenderUI()
@@ -73,9 +73,8 @@ void MainScene::LoadResources()
 {
 	m_Camera = new Camera(glm::radians(45.0f), static_cast<float>(App::Width) / static_cast<float>(App::Height));
 
-	this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
-	this->mesh = Mesh::Load("Content/3D_Models/", "", *this->shader);
-	//this->mesh->GetTransform().
+	//this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
+	//this->mesh = Mesh::Load("Content/3D_Models/", "teapot", *this->shader);
 }
 
 void MainScene::UnloadResources()
