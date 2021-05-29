@@ -2,14 +2,10 @@
 #include "MainScene.h"
 
 #include <string>
-
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
-
 #include <glm/vec2.hpp>
-
 #include "Core/App.h"
-
 #include "Utils/Log.h"
 
 // UI needed to render:
@@ -37,8 +33,7 @@ constexpr float CalculateAverage(std::array<float, MAX_MESH_SCENES> sceneProgres
 }
 
 MainScene::MainScene() :
-	AScene{STRINGIFY(MainScene)},
-	m_Progress{0.1f}
+	AScene{STRINGIFY(MainScene)}
 {
 }
 
@@ -48,6 +43,7 @@ MainScene::~MainScene()
 
 void MainScene::RenderMeshes()
 {
+	this->mesh->Draw(m_Camera->GetViewProjectionMatrix());
 }
 
 void MainScene::RenderUI()
@@ -64,6 +60,10 @@ void MainScene::RenderUI()
 			}
 		}
 	}
+	
+	CreateDebugWindow();
+	SetDebugRespectiveAttributes();
+	
 	CreateViewAllButton({150.0f, 60.0f}, 25.0f);
 	CreateSceneButtons(5, {125.0f, 125.0f}, 50.0f);
 	CreateAllSceneLoadingBar({App::Width - 200.0f, 30.0f});
@@ -71,16 +71,58 @@ void MainScene::RenderUI()
 
 void MainScene::LoadResources()
 {
+	m_Camera = new Camera(glm::radians(45.0f), static_cast<float>(App::Width) / static_cast<float>(App::Height));
 
+	this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
+	this->mesh = Mesh::Load("Content/3D_Models/", "teapot", *this->shader);
 }
 
 void MainScene::UnloadResources()
 {
-	 
+}
+
+void MainScene::CreateDebugWindow()
+{
+	ImGuiWindowFlags windowFlags = 0;
+	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
+	windowFlags |= ImGuiWindowFlags_NoScrollbar;
+	windowFlags |= ImGuiWindowFlags_NoMove;
+	windowFlags |= ImGuiWindowFlags_NoResize;
+ 
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x,
+                                   viewport->WorkPos.y + + viewport->Size.y / 2.0f),
+                                     ImGuiCond_Once);
+ 
+	ImGui::SetNextWindowSize(ImVec2(150.0f,
+                                    viewport->Size.y / 2.0f),
+                                     ImGuiCond_Once);
+	
+	if(!ImGui::Begin("DebugWindow", nullptr, windowFlags))
+	{
+		ImGui::End();
+	}
+	else
+	{
+		ImGui::DragFloat3("Camera Pos", &m_DebugData.CameraPosition.x, 0.01f);
+		ImGui::DragFloat3("Camera Rot", &m_DebugData.CameraRotation.x, 0.01f);
+		ImGui::End();
+	}
+}
+
+void MainScene::SetDebugRespectiveAttributes() const
+{
+	
+	
+	m_Camera->SetPosition(m_DebugData.CameraPosition);
+	m_Camera->SetRotation(m_DebugData.CameraRotation.x,
+						  m_DebugData.CameraRotation.y,
+						  m_DebugData.CameraRotation.z);
+
 }
 
 void MainScene::CreateViewAllButton(const glm::vec2& size,
-									float spacing)
+                                    const float spacing)
 {
 	ImGuiWindowFlags windowFlags = 0;
 	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
@@ -95,7 +137,6 @@ void MainScene::CreateViewAllButton(const glm::vec2& size,
                                    viewport->WorkPos.y + viewport->Size.y - size.y - spacing),
 									 ImGuiCond_Once);
 									 
-
 	if (!ImGui::Begin("View All Button", nullptr, windowFlags))
 	{
 		ImGui::End();
@@ -132,7 +173,7 @@ void MainScene::CreateSceneButtons(const int amountOfScenes,
 								   const glm::vec2& size,
 								   const float xSpacing)
 {
-	ImGuiWindowFlags windowFlags = 0;
+	ImGuiWindowFlags windowFlags = 0;	
 	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
 	windowFlags |= ImGuiWindowFlags_NoTitleBar;
 	windowFlags |= ImGuiWindowFlags_NoScrollbar;

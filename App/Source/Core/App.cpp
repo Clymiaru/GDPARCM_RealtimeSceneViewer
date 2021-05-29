@@ -34,28 +34,20 @@ App::~App()
 
 void App::Run()
 {
-	SceneManager::GetInstance().LoadScenes({"MainScene"});
-	SceneManager::GetInstance().LoadScenes({ "FirstScene" });
-
+	SceneManager::GetInstance().LoadScenes({"MainScene", "FirstScene"});
+	double now = glfwGetTime();
+	double prev = 0.0;
+	
 	while (!glfwWindowShouldClose(m_Window))
 	{
+		prev = now;
+		
 		glfwPollEvents();
-	
-		glClearColor(0.0f, 0.0f, 0.1f, 1.00f);
-		glClear(GL_COLOR_BUFFER_BIT);
-		
-		SceneManager::GetInstance().RenderScenesMeshes();
 
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		now = glfwGetTime();
+		Update(now - prev);
 
-		SceneManager::GetInstance().RenderScenesUI();
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		
-		glfwSwapBuffers(m_Window);
+		Render();
 	}
 }
 
@@ -81,7 +73,7 @@ void App::InitGlfw()
 void App::InitGlad()
 {
 	const int gladInitFlag = gladLoadGL();
-	ASSERT(gladInitFlag == true,
+	ASSERT(gladInitFlag == GL_TRUE,
 			"GLAD cannot be initialized!");
 }
 
@@ -94,3 +86,74 @@ void App::InitImGui() const
 	ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
 	ImGui_ImplOpenGL3_Init((char *)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
 }
+
+void App::Update(float deltaTime)
+{
+	m_Ticks += deltaTime;
+	m_Framecount++;
+
+	if (m_Ticks > 1.0f)
+	{
+		m_FPS = m_Framecount;
+		m_Framecount = 0;
+		m_Ticks = 0;
+	}
+}
+
+void App::Render()
+{
+	glEnable(GL_DEPTH_TEST);  
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+		
+	glClearColor(0.0f, 0.0f, 0.1f, 1.00f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glCullFace(GL_FRONT);  
+	glFrontFace(GL_CCW); 
+	glDepthFunc(GL_LESS);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+		
+	SceneManager::GetInstance().RenderScenesMeshes();
+
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	ImGuiWindowFlags windowFlags = 0;
+	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
+	windowFlags |= ImGuiWindowFlags_NoTitleBar;
+	windowFlags |= ImGuiWindowFlags_NoScrollbar;
+	windowFlags |= ImGuiWindowFlags_NoMove;
+	windowFlags |= ImGuiWindowFlags_NoResize;
+
+	ImGui::SetWindowFontScale(3.8);
+
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+	ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x,
+                                   viewport->WorkPos.y),
+                                     ImGuiCond_Once);
+
+	ImGui::SetNextWindowSize(ImVec2(75.0f,
+                                   30.0f),
+                                     ImGuiCond_Once);
+
+	if(!ImGui::Begin("FPSCounter", nullptr, windowFlags))
+	{
+		ImGui::End();
+	}
+	else
+	{
+		ImGui::TextColored({1.0f, 1.0f, 0.0f, 1.0f}, "FPS: %d", m_FPS);
+		ImGui::End();
+	}
+
+	ImGui::SetWindowFontScale(1.0);
+	SceneManager::GetInstance().RenderScenesUI();
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		
+	glfwSwapBuffers(m_Window);
+}
+
