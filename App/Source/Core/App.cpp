@@ -34,13 +34,13 @@ App::~App()
 
 void App::Run()
 {
-	SceneManager::GetInstance().LoadScenes({"MainScene", "FirstScene"});
-	SceneManager::GetInstance().ActivateScenes({"MainScene"});
+	SceneManager::GetInstance().LoadScenes({"MainScene", "Scene0", "Scene1", "Scene2" , "Scene3" , "Scene4" });
 	double now = glfwGetTime();
+	double prev = 0.0;
 	
 	while (!glfwWindowShouldClose(m_Window))
 	{
-		const double prev = now;
+		prev = now;
 		
 		glfwPollEvents();
 
@@ -87,7 +87,7 @@ void App::InitImGui() const
 	ImGui_ImplOpenGL3_Init((char *)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
 }
 
-void App::Update(const float deltaTime)
+void App::Update(float deltaTime)
 {
 	m_Ticks += deltaTime;
 	m_Framecount++;
@@ -98,8 +98,6 @@ void App::Update(const float deltaTime)
 		m_Framecount = 0;
 		m_Ticks = 0;
 	}
-
-	SceneManager::GetInstance().UpdateScenes(deltaTime);
 }
 
 void App::Render()
@@ -148,6 +146,7 @@ void App::Render()
 		ImGui::TextColored({1.0f, 1.0f, 0.0f, 1.0f}, "FPS: %d", m_FPS);
 		ImGui::End();
 	}
+
 	
 	SceneManager::GetInstance().RenderScenesUI();
 

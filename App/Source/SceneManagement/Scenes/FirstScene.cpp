@@ -25,7 +25,7 @@ void FirstScene::RenderUI()
 
 void FirstScene::RenderMeshes()
 {
-	//this->mesh->Draw(m_Camera->GetViewProjectionMatrix());
+	this->mesh->Draw(m_Camera->GetViewProjectionMatrix());
 }
 
 void FirstScene::Update(float deltaTime)
@@ -34,9 +34,10 @@ void FirstScene::Update(float deltaTime)
 
 void FirstScene::LoadResources()
 {
+	m_Camera = new Camera(glm::radians(45.0f), static_cast<float>(App::Width) / static_cast<float>(App::Height));
 	// Load 
-	// this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
-	// this->mesh = Mesh::Load("Content/3D_Models/", "teapot", *this->shader);
+	 this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
+	 this->mesh = Mesh::Load("Content/3D_Models/", "teapot", *this->shader);
 }
 
 void FirstScene::UnloadResources()
