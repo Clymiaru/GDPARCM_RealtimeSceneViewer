@@ -3,18 +3,19 @@
 #include "Utils/TypeAlias.h"
 
 #include "AScene.h"
+
+#include "RenderSystem/Camera.h"
+
 class SceneManager final
 {
 public:
 	static SceneManager& GetInstance();
 	~SceneManager() = default;
 
-	// TODO: Ask if all the scenes will be loaded all at once
-
 	void RegisterScenes(List<AScene*> scenes);
 	
 	void LoadScenes(List<String> sceneNames);
-	void LoadScenesAsync(List<String> sceneNames);
+	// void LoadScenesAsync(List<String> sceneNames);
 	
 	void UnloadScenes(List<String> sceneNames);
 

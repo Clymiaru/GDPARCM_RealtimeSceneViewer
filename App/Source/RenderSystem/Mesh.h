@@ -12,6 +12,8 @@
 
 #include "Shader.h"
 
+#include "Utils/Transform.h"
+
 class Mesh final
 {
 public:
@@ -22,7 +24,7 @@ public:
          const List<GLuint>& indices,
 		 Shader& shader);
 
-	void Draw(const glm::mat4& transform) const;
+	void Draw(const glm::mat4& viewProjection) const;
 
 	static Mesh* Load(StringRef basePath,
 					  StringRef filename,
@@ -36,4 +38,6 @@ protected:
 
 	std::vector<float> m_Positions;
 	std::vector<GLuint> m_Indices;
+
+	Transform m_Transform;
 };

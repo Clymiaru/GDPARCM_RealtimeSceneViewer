@@ -3,6 +3,7 @@
 
 #include "SceneManagement/SceneManager.h"
 #include "SceneManagement/Scenes/MainScene.h"
+#include "SceneManagement/Scenes/FirstScene.h"
 
 class RealtimeSceneViewer final : public App
 {
@@ -13,7 +14,8 @@ public:
 		// App specific initialization
 		SceneManager::GetInstance().RegisterScenes(
         {
-			new MainScene()
+			new MainScene(),
+			new FirstScene()
         });
 	}
 

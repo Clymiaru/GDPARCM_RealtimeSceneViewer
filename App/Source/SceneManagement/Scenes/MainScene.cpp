@@ -2,32 +2,38 @@
 #include "MainScene.h"
 
 #include <string>
-
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
-
 #include <glm/vec2.hpp>
-
 #include "Core/App.h"
-
 #include "Utils/Log.h"
 
 // UI needed to render:
-    // * Global loading bar for all assets to load
-    // * View all button
-    // Concerning 5 scenes
-    // * 5 Scenes view button
-    //		Must be clickable only when loading is complete
-    // * 5 Scenes close button
-    //		Can't be selected or view if loading bar is still present
-    // * 5 Scenes loading bar
-    //		Must only be visible if there are actual loading process
+// * Global loading bar for all assets to load
+// * View all button
+// Concerning 5 scenes
+// * 5 Scenes view button
+//		Must be clickable only when loading is complete
+// * 5 Scenes close button
+//		Can't be selected or view if loading bar is still present
+// * 5 Scenes loading bar
+//		Must only be visible if there are actual loading process
 
 const int MAX_MESH_SCENES = 5;
 
+constexpr float CalculateAverage(std::array<float, MAX_MESH_SCENES> sceneProgress)
+{
+	float result = 0.0f;
+	for (auto progress : sceneProgress)
+	{
+		result += progress;
+	}
+	result /= MAX_MESH_SCENES;
+	return result;
+}
+
 MainScene::MainScene() :
-	AScene{STRINGIFY(MainScene)},
-	m_Progress{0.1f}
+	AScene{STRINGIFY(MainScene)}
 {
 }
 
@@ -37,6 +43,7 @@ MainScene::~MainScene()
 
 void MainScene::RenderMeshes()
 {
+	this->mesh->Draw(m_Camera->GetViewProjectionMatrix());
 }
 
 void MainScene::RenderUI()
@@ -47,12 +54,16 @@ void MainScene::RenderUI()
 	{
 		for (int i = 0; i < MAX_MESH_SCENES; i++)
 		{
-			if (m_LoadingProgress[i] < 1.0f)
+			if (m_LoadingProgress[i] < 1.0f && i != 2)
 			{
 				m_LoadingProgress[i] += 0.002f;
 			}
 		}
 	}
+	
+	CreateDebugWindow();
+	SetDebugRespectiveAttributes();
+	
 	CreateViewAllButton({150.0f, 60.0f}, 25.0f);
 	CreateSceneButtons(5, {125.0f, 125.0f}, 50.0f);
 	CreateAllSceneLoadingBar({App::Width - 200.0f, 30.0f});
@@ -60,14 +71,72 @@ void MainScene::RenderUI()
 
 void MainScene::LoadResources()
 {
+	m_Camera = new Camera(glm::radians(45.0f), static_cast<float>(App::Width) / static_cast<float>(App::Height));
+
+	this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
+	this->mesh = Mesh::Load("Content/3D_Models/", "teapot", *this->shader);
 }
 
 void MainScene::UnloadResources()
 {
 }
 
+void MainScene::CreateDebugWindow()
+{
+	ImGuiWindowFlags windowFlags = 0;
+	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
+	windowFlags |= ImGuiWindowFlags_NoScrollbar;
+	windowFlags |= ImGuiWindowFlags_NoResize;
+ 
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+	const ImVec2 windowSize = {
+		300.0f,
+        150.0f
+    };
+	
+	const ImVec2 windowPos = {
+		viewport->WorkPos.x,
+		viewport->WorkPos.y + viewport->Size.y - windowSize.y
+	};
+	ImGui::SetNextWindowPos(windowPos, ImGuiCond_Once);
+	ImGui::SetNextWindowSize(windowSize, ImGuiCond_Once);
+	
+	if(!ImGui::Begin("Debug Window", nullptr, windowFlags))
+	{
+		ImGui::End();
+	}
+	else
+	{
+		if (ImGui::TreeNode("Camera"))
+		{
+			ImGui::DragFloat3("Position", &m_DebugData.CameraPosition.x, 0.001f);
+			ImGui::DragFloat3("Rotation", &m_DebugData.CameraRotation.x, 0.001f);
+
+			if (ImGui::Button("Reset", {100.0f, 20.0f}))
+			{
+				m_DebugData.CameraPosition = {0.0f, 0.0f, 0.0f};
+				m_DebugData.CameraRotation = {0.0f, 0.0f, 0.0f};
+			}
+
+			ImGui::TreePop();
+		}
+		
+		ImGui::End();
+	}
+}
+
+void MainScene::SetDebugRespectiveAttributes() const
+{
+	m_Camera->SetPosition(m_DebugData.CameraPosition);
+	m_Camera->SetRotation(m_DebugData.CameraRotation.x,
+						  m_DebugData.CameraRotation.y,
+						  m_DebugData.CameraRotation.z);
+
+}
+
 void MainScene::CreateViewAllButton(const glm::vec2& size,
-									float spacing)
+                                    const float spacing)
 {
 	ImGuiWindowFlags windowFlags = 0;
 	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
@@ -82,7 +151,6 @@ void MainScene::CreateViewAllButton(const glm::vec2& size,
                                    viewport->WorkPos.y + viewport->Size.y - size.y - spacing),
 									 ImGuiCond_Once);
 									 
-
 	if (!ImGui::Begin("View All Button", nullptr, windowFlags))
 	{
 		ImGui::End();
@@ -119,7 +187,7 @@ void MainScene::CreateSceneButtons(const int amountOfScenes,
 								   const glm::vec2& size,
 								   const float xSpacing)
 {
-	ImGuiWindowFlags windowFlags = 0;
+	ImGuiWindowFlags windowFlags = 0;	
 	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
 	windowFlags |= ImGuiWindowFlags_NoTitleBar;
 	windowFlags |= ImGuiWindowFlags_NoScrollbar;
@@ -147,14 +215,8 @@ void MainScene::CreateSceneButtons(const int amountOfScenes,
 		}
 		else
 		{
-			CreateUnloadSceneButton(i, {size.x, 30.0f},
-							[i]() -> void
-									{
-										LOG("Scene " << i << " is unloaded!")
-									});
-
+			CreateUnloadSceneButton(i, {size.x, 30.0f});
 			CreateViewSceneButton(i, {size.x, size.y});
-
 			CreatePerSceneLoadingBar(i, {size.x, 20.0f});
 			ImGui::End();
 		}
@@ -162,8 +224,7 @@ void MainScene::CreateSceneButtons(const int amountOfScenes,
 }
 
 void MainScene::CreateUnloadSceneButton(const int sceneID,
-                                        const glm::vec2& size,
-                                        const std::function<void()> onUnload)
+                                        const glm::vec2& size)
 {
 	const String closeButtonName = String("Close##Scene") + std::to_string(sceneID);
 	if (!m_ScenesLoaded[sceneID])
@@ -176,8 +237,7 @@ void MainScene::CreateUnloadSceneButton(const int sceneID,
 	{
 		if (m_ScenesLoaded[sceneID])
 		{
-			m_ScenesLoaded[sceneID] = false;
-			onUnload();
+			UnloadScene(sceneID);
 			return;
 		}
 	}
@@ -189,12 +249,13 @@ void MainScene::CreateUnloadSceneButton(const int sceneID,
 	}
 }
 
-void MainScene::CreateViewSceneButton(int sceneID,
-									  const glm::vec2& size)
+void MainScene::CreateViewSceneButton(const int sceneID,
+                                      const glm::vec2& size)
 {
 	const String sceneName = String("Scene ") + std::to_string(sceneID);
 	
-	if (m_ActiveScenes[sceneID] && m_ScenesLoaded[sceneID])
+	if (!m_ViewAllScenes &&
+		m_ActiveScenes[sceneID] && m_ScenesLoaded[sceneID])
 	{
 		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
@@ -207,55 +268,33 @@ void MainScene::CreateViewSceneButton(int sceneID,
 			ViewScene(sceneID);
 			return;
 		}
-	}
 
-	if (m_ActiveScenes[sceneID] && m_ScenesLoaded[sceneID])
-	{
-		ImGui::PopItemFlag();
-		ImGui::PopStyleVar();
-	}
-}
-
-void MainScene::CreateLoadSceneButton(int sceneID,
-                                      const glm::vec2& size,
-                                      const std::function<void()> onLoad)
-{
-	const String sceneName = String("Scene ") + std::to_string(sceneID);
-	
-	if (m_ScenesLoaded[sceneID])
-	{
-		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-	}
-
-	if (ImGui::Button(sceneName.c_str(), {size.x, size.y}))
-	{
-		if (!m_ScenesLoaded[sceneID])
+		if (!m_ActiveScenes[sceneID] && !m_ScenesLoaded[sceneID])
 		{
-			m_ScenesLoaded[sceneID] = true;
-			onLoad();
+			LoadScene(sceneID);
 			return;
 		}
 	}
 
-	if (m_ScenesLoaded[sceneID])
+	if (!m_ViewAllScenes &&
+		m_ActiveScenes[sceneID] && m_ScenesLoaded[sceneID])
 	{
 		ImGui::PopItemFlag();
 		ImGui::PopStyleVar();
 	}
 }
 
-void MainScene::CreatePerSceneLoadingBar(int sceneID,
-								  const glm::vec2& size)
+void MainScene::CreatePerSceneLoadingBar(const int sceneID,
+                                         const glm::vec2& size)
 {
-	if (m_LoadingProgress[sceneID] > 1.0f)
+	if (m_LoadingProgress[sceneID] < 1.0f)
 	{
 		ImGui::ProgressBar(m_LoadingProgress[sceneID],
 					{size.x, size.y});
 	}
 }
 
-void MainScene::CreateAllSceneLoadingBar(const glm::vec2& size)
+void MainScene::CreateAllSceneLoadingBar(const glm::vec2& size) const
 {
 	ImGuiWindowFlags windowFlags = 0;
 	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
@@ -270,37 +309,22 @@ void MainScene::CreateAllSceneLoadingBar(const glm::vec2& size)
                                    viewport->WorkPos.y + viewport->Size.y / 2.0f),
                                      ImGuiCond_Once);
 	
+	const float averageLoadingProgress = CalculateAverage(m_LoadingProgress);
 
-	if (!ImGui::Begin("GlobalLoadingBar", nullptr, windowFlags))
+	if (averageLoadingProgress < 1.0f)
 	{
-		ImGui::End();
-	}
-	else
-	{
-		float averageLoadingProgress = 0.0f;
-		for (int i = 0; i < MAX_MESH_SCENES; i++)
+		if (!ImGui::Begin("GlobalLoadingBar", nullptr, windowFlags))
 		{
-			averageLoadingProgress += m_LoadingProgress[i];
+			ImGui::End();
 		}
-		averageLoadingProgress /= MAX_MESH_SCENES;
-		
-		ImGui::ProgressBar(averageLoadingProgress,
-                {size.x, size.y});
-
-		ImGui::End();
-	}
-}
-
-bool MainScene::AreAllScenesLoaded()
-{
-	for (auto& flag : m_ScenesLoaded)
-	{
-		if (!flag)
+		else
 		{
-			return false;
+			ImGui::ProgressBar(averageLoadingProgress,
+	                {size.x, size.y});
+
+			ImGui::End();
 		}
 	}
-	return true;
 }
 
 void MainScene::ViewAllScenes()
@@ -317,6 +341,19 @@ void MainScene::ViewScene(const int sceneID)
 			m_ActiveScenes[i] = false;			
 		}
 	}
+	
 	m_ActiveScenes[sceneID] = true;
 	LOG("View scene " << sceneID);
+}
+
+void MainScene::LoadScene(const int sceneID)
+{
+	m_ScenesLoaded[sceneID] = true;
+	LOG("Load scene " << sceneID);
+}
+
+void MainScene::UnloadScene(const int sceneID)
+{
+	m_ScenesLoaded[sceneID] = false;
+	LOG("Unload scene " << sceneID);
 }

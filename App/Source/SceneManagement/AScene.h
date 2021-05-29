@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "RenderSystem/Camera.h"
 
 #include "Utils/TypeAlias.h"
 
@@ -28,6 +29,9 @@ private:
 	
 	virtual void LoadResources() = 0;
 	virtual void UnloadResources() = 0;
-	
+
 	String m_Name;
+
+protected:
+	Camera* m_Camera;
 };
