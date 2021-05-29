@@ -127,18 +127,17 @@ void App::Render()
 	windowFlags |= ImGuiWindowFlags_NoMove;
 	windowFlags |= ImGuiWindowFlags_NoResize;
 
-	ImGui::SetWindowFontScale(3.8);
 
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x,
                                    viewport->WorkPos.y),
                                      ImGuiCond_Once);
-
+ 
 	ImGui::SetNextWindowSize(ImVec2(75.0f,
                                    30.0f),
                                      ImGuiCond_Once);
 
-	if(!ImGui::Begin("FPSCounter", nullptr, windowFlags))
+	if(!ImGui::Begin("FPS Counter", nullptr, windowFlags))
 	{
 		ImGui::End();
 	}
@@ -148,7 +147,7 @@ void App::Render()
 		ImGui::End();
 	}
 
-	ImGui::SetWindowFontScale(1.0);
+	
 	SceneManager::GetInstance().RenderScenesUI();
 
 	ImGui::Render();

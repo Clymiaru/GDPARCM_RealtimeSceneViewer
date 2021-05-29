@@ -86,34 +86,48 @@ void MainScene::CreateDebugWindow()
 	ImGuiWindowFlags windowFlags = 0;
 	windowFlags |= ImGuiWindowFlags_NoSavedSettings;
 	windowFlags |= ImGuiWindowFlags_NoScrollbar;
-	windowFlags |= ImGuiWindowFlags_NoMove;
 	windowFlags |= ImGuiWindowFlags_NoResize;
  
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x,
-                                   viewport->WorkPos.y + + viewport->Size.y / 2.0f),
-                                     ImGuiCond_Once);
- 
-	ImGui::SetNextWindowSize(ImVec2(150.0f,
-                                    viewport->Size.y / 2.0f),
-                                     ImGuiCond_Once);
+
+	const ImVec2 windowSize = {
+		300.0f,
+        150.0f
+    };
 	
-	if(!ImGui::Begin("DebugWindow", nullptr, windowFlags))
+	const ImVec2 windowPos = {
+		viewport->WorkPos.x,
+		viewport->WorkPos.y + viewport->Size.y - windowSize.y
+	};
+	ImGui::SetNextWindowPos(windowPos, ImGuiCond_Once);
+	ImGui::SetNextWindowSize(windowSize, ImGuiCond_Once);
+	
+	if(!ImGui::Begin("Debug Window", nullptr, windowFlags))
 	{
 		ImGui::End();
 	}
 	else
 	{
-		ImGui::DragFloat3("Camera Pos", &m_DebugData.CameraPosition.x, 0.01f);
-		ImGui::DragFloat3("Camera Rot", &m_DebugData.CameraRotation.x, 0.01f);
+		if (ImGui::TreeNode("Camera"))
+		{
+			ImGui::DragFloat3("Position", &m_DebugData.CameraPosition.x, 0.001f);
+			ImGui::DragFloat3("Rotation", &m_DebugData.CameraRotation.x, 0.001f);
+
+			if (ImGui::Button("Reset", {100.0f, 20.0f}))
+			{
+				m_DebugData.CameraPosition = {0.0f, 0.0f, 0.0f};
+				m_DebugData.CameraRotation = {0.0f, 0.0f, 0.0f};
+			}
+
+			ImGui::TreePop();
+		}
+		
 		ImGui::End();
 	}
 }
 
 void MainScene::SetDebugRespectiveAttributes() const
 {
-	
-	
 	m_Camera->SetPosition(m_DebugData.CameraPosition);
 	m_Camera->SetRotation(m_DebugData.CameraRotation.x,
 						  m_DebugData.CameraRotation.y,
