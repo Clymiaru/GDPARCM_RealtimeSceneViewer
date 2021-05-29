@@ -19,7 +19,7 @@ public:
 		std::mutex &m_ResourceMutex,
 		AssetTable &m_AssetTable,
 		HashTable<String, int> &m_CurrentAssetCountPerScene,
-		HashTable<String, int> &m_CurrentAsset);
+		int &m_CurrentAsset);
 
 
 	void OnStartTask() override;
@@ -36,6 +36,6 @@ private:
 	std::mutex& m_ResourceMutex;
 	AssetTable& m_AssetTable;
 	HashTable<String, int>& m_CurrentAssetCountPerScene;
-	HashTable<String, int>& m_CurrentAsset;
+	int& m_CurrentAsset;
 };
 

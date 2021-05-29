@@ -94,20 +94,20 @@ template<typename Resource>
 inline void AssetManager::LoadAsync(StringRef sceneName, StringRef assetName, StringRef filename, StringRef basepath, Shader& shader)
 {
 	auto isFound = this->m_AssetTable.find(assetName);
-	if (isFound == this->m_AssetStorage.end())
+	if (isFound == this->m_AssetTable.end())
 	{
-		m_MaxAssetCountPerScene[sceneOwner]++;
+		m_MaxAssetCountPerScene[sceneName]++;
 		m_MaxAssetCount++;
 
 		LoadMeshAction* action = new LoadMeshAction(assetName,
 			filename,
 			basepath,
 			shader,
-			sceneOwner,
-			&m_ResourceMutex,
-			&m_AssetTable,
-			&m_CurrentAssetCountPerScene,
-			&m_CurrentAsset);
+			sceneName,
+			*m_ResourceMutex,
+			m_AssetTable,
+			m_CurrentAssetCountPerScene,
+			m_CurrentAsset);
 
 		ThreadPoolManager::GetInstance().scheduleTask(sceneName, action);
 	}

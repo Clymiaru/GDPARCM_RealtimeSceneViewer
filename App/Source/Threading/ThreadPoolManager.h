@@ -16,7 +16,7 @@ public:
 	static ThreadPoolManager& GetInstance();
 	~ThreadPoolManager();
 
-	void startScheduler(std::string name);
+	void startScheduler(std::string name, int numWorkers);
 	void stopScheduler(std::string name);
 	void scheduleTask(std::string name, IWorkerAction* action);
 
