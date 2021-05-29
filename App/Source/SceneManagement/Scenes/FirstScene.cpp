@@ -28,6 +28,10 @@ void FirstScene::RenderMeshes()
 	//this->mesh->Draw(m_Camera->GetViewProjectionMatrix());
 }
 
+void FirstScene::Update(float deltaTime)
+{
+}
+
 void FirstScene::LoadResources()
 {
 	// Load 
