@@ -74,7 +74,8 @@ void MainScene::LoadResources()
 	m_Camera = new Camera(glm::radians(45.0f), static_cast<float>(App::Width) / static_cast<float>(App::Height));
 
 	this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
-	this->mesh = Mesh::Load("Content/3D_Models/", "teapot", *this->shader);
+	this->mesh = Mesh::Load("Content/3D_Models/", "", *this->shader);
+	//this->mesh->GetTransform().
 }
 
 void MainScene::UnloadResources()
@@ -110,8 +111,8 @@ void MainScene::CreateDebugWindow()
 	{
 		if (ImGui::TreeNode("Camera"))
 		{
-			ImGui::DragFloat3("Position", &m_DebugData.CameraPosition.x, 0.001f);
-			ImGui::DragFloat3("Rotation", &m_DebugData.CameraRotation.x, 0.001f);
+			ImGui::DragFloat3("Position", &m_DebugData.CameraPosition.x, 0.01f);
+			ImGui::DragFloat3("Rotation", &m_DebugData.CameraRotation.x, 0.01f);
 
 			if (ImGui::Button("Reset", {100.0f, 20.0f}))
 			{

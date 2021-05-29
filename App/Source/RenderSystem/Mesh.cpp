@@ -63,6 +63,12 @@ void Mesh::Draw(const glm::mat4& viewProjection) const
 	m_Shader->Unbind();
 }
 
+Transform& Mesh::GetTransform()
+{
+	// TODO: insert return statement here
+	return m_Transform;
+}
+
 Mesh* Mesh::Load(StringRef basePath,
 				 StringRef filename,
 				 Shader& shader)

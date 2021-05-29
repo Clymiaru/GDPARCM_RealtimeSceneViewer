@@ -26,6 +26,8 @@ public:
 
 	void Draw(const glm::mat4& viewProjection) const;
 
+	Transform& GetTransform();
+
 	static Mesh* Load(StringRef basePath,
 					  StringRef filename,
 					  Shader& shader);
