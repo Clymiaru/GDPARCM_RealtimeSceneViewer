@@ -9,6 +9,8 @@
 #include "SceneManagement/Scenes/Scene3.h"
 #include "SceneManagement/Scenes/Scene4.h"
 
+#include "Threading/ThreadPoolManager.h"
+
 class RealtimeSceneViewer final : public App
 {
 public:
@@ -35,6 +37,12 @@ public:
 
 int main()
 {
+	ThreadPoolManager::GetInstance().startScheduler("Scene0", 5);
+	ThreadPoolManager::GetInstance().startScheduler("Scene1", 5);
+	ThreadPoolManager::GetInstance().startScheduler("Scene2", 5);
+	ThreadPoolManager::GetInstance().startScheduler("Scene3", 5);
+	ThreadPoolManager::GetInstance().startScheduler("Scene4", 5);
+	
 	RealtimeSceneViewer app = RealtimeSceneViewer();
 	app.Run();
 

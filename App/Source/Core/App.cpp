@@ -3,6 +3,8 @@
 #include <ImGui/imgui.h>
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
+#include <glad.h>
+
 #include <ImGui/imgui_impl_opengl3.h>
 #include <ImGui/imgui_impl_glfw.h>
 
@@ -22,6 +24,9 @@ App::App(const Uint width,
 	InitGlfw();
 	InitGlad();
 	InitImGui();
+
+	m_MainCamera = new Camera(glm::radians(60.0f),
+						static_cast<float>(Width) / Height);
 }
 
 App::~App()
@@ -34,13 +39,17 @@ App::~App()
 
 void App::Run()
 {
-	SceneManager::GetInstance().LoadScenes({"MainScene", "Scene0", "Scene1", "Scene2" , "Scene3" , "Scene4" });
+	SceneManager::GetInstance().SetMainCamera(*m_MainCamera);
+	SceneManager::GetInstance().LoadScenes({"MainScene",
+													  "Scene0",
+													  "Scene1",
+													  "Scene2",
+													  "Scene3",
+													  "Scene4" });
 	double now = glfwGetTime();
-	double prev = 0.0;
-	
 	while (!glfwWindowShouldClose(m_Window))
 	{
-		prev = now;
+		const double prev = now;
 		
 		glfwPollEvents();
 
@@ -98,6 +107,8 @@ void App::Update(float deltaTime)
 		m_Framecount = 0;
 		m_Ticks = 0;
 	}
+
+	SceneManager::GetInstance().UpdateScenes(deltaTime);
 }
 
 void App::Render()
@@ -126,7 +137,6 @@ void App::Render()
 	windowFlags |= ImGuiWindowFlags_NoScrollbar;
 	windowFlags |= ImGuiWindowFlags_NoMove;
 	windowFlags |= ImGuiWindowFlags_NoResize;
-
 
 	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x,

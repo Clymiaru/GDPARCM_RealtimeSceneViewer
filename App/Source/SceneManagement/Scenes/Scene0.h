@@ -18,13 +18,14 @@ public:
 	Scene0();
 	~Scene0() override;
 		
-	void RenderUI() override;
-	void RenderMeshes() override;
+	void RenderUI(Camera& camera) override;
+	void RenderMeshes(Camera& camera) override;
+	void Update(float deltaTime) override;
 
 private:
 	void LoadResources() override;
 	void UnloadResources() override;
 
-	Mesh* mesh = nullptr;
 	Shader* shader = nullptr;
+	bool m_AssetsLoaded = false;
 };

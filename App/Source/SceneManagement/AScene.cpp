@@ -11,13 +11,17 @@ AScene::AScene(StringRef name) :
 
 void AScene::Load()
 {
-	m_Camera = new Camera(glm::radians(60.0f), static_cast<float>(App::Width) / App::Height);
 	LoadResources();
 }
 
 void AScene::Unload()
 {
 	UnloadResources();
+}
+
+void AScene::SetCamera(Camera& mainCamera)
+{
+	m_Camera = &mainCamera;
 }
 
 StringRef AScene::GetName() const

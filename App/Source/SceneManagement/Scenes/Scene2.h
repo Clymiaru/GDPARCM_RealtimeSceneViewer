@@ -11,8 +11,10 @@ public:
 	Scene2();
 	~Scene2() override;
 		
-	void RenderUI() override;
-	void RenderMeshes() override;
+	void RenderUI(Camera& camera) override;
+	void RenderMeshes(Camera& camera) override;
+	void Update(float deltaTime) override;
+
 
 private:
 	void LoadResources() override;
