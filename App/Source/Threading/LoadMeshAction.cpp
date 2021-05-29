@@ -2,22 +2,34 @@
 #include "LoadMeshAction.h"
 #include "AssetManagement/Model/Model.h"
 
-LoadMeshAction::LoadMeshAction(StringRef assetName, StringRef filename, StringRef basepath, Shader& shader, StringRef sceneOwner, std::mutex& m_ResourceMutex, AssetTable& m_AssetTable, HashTable<String, int>& m_CurrentAssetCountPerScene, int& m_CurrentAsset)
-	: m_ResourceMutex(m_ResourceMutex), m_AssetTable(m_AssetTable), m_CurrentAssetCountPerScene(m_CurrentAssetCountPerScene), m_CurrentAsset(m_CurrentAsset), shader(shader)
+LoadMeshAction::LoadMeshAction(StringRef assetName,
+							   StringRef filepath,
+							   StringRef basepath,
+							   StringRef sceneOwner,
+							   std::mutex& resourceMutex,
+							   AssetTable& assetTable,
+							   HashTable<String, int>& currentAssetCountPerScene,
+							   int& currentAsset) :
+	  m_AssetName{assetName},
+	  m_Filepath{filepath},
+	  m_Basepath{basepath},
+	  m_SceneOwnerName{sceneOwner},
+	  m_ResourceMutex(resourceMutex),
+	  m_AssetTable(assetTable),
+	  m_CurrentAssetCountPerScene(currentAssetCountPerScene),
+	  m_CurrentAsset(currentAsset)
 {
-	this->assetName = assetName;
-	this->filename = filename;
-	this->basepath = basepath;
-	this->sceneOwner = sceneOwner;
 }
 
 void LoadMeshAction::OnStartTask()
 {
-	Model* model = new Model(this->assetName, this->filename, this->basepath, this->shader, this->sceneOwner);
+	Model* model = new Model(this->m_AssetName,
+							 this->m_Filepath,
+					  this->m_Basepath);
 
 	this->m_ResourceMutex.lock();
-	LOG("Threading!!!!!");
-	this->m_AssetTable[assetName] = model;
-	this->m_CurrentAssetCountPerScene[sceneOwner]++;
+	LOG("Threading!!!!!" << m_SceneOwnerName);
+	this->m_AssetTable[m_AssetName] = model;
+	this->m_CurrentAssetCountPerScene[m_SceneOwnerName]++;
 	this->m_ResourceMutex.unlock();
 }

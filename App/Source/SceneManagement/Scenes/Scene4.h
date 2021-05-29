@@ -11,8 +11,10 @@ public:
 	Scene4();
 	~Scene4() override;
 		
-	void RenderUI() override;
-	void RenderMeshes() override;
+	void RenderUI(Camera& camera) override;
+	void RenderMeshes(Camera& camera) override;
+	void Update(float deltaTime) override;
+
 
 private:
 	void LoadResources() override;

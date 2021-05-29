@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include <GLFW/glfw3.h>
 
-#include "RenderSystem/Shader.h"
+#include "Utils/TypeAlias.h"
+#include "RenderSystem/Camera.h"
 
 class App
 {
@@ -15,6 +16,7 @@ public:
 
 private:
 	GLFWwindow* m_Window;
+	Camera* m_MainCamera;
 	
 	void InitGlfw();
 	static void InitGlad();

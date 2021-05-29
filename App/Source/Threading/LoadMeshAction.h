@@ -4,35 +4,28 @@
 #include "Utils/TypeAlias.h"
 #include <mutex>
 #include "RenderSystem/Shader.h"
-#include "AssetManagement/Asset.h"
+#include "AssetManagement/AssetManager.h"
 
-using AssetTable = HashTable<String, Asset*>;
 
-class LoadMeshAction : public IWorkerAction
+class LoadMeshAction final : public IWorkerAction
 {
 public:
 	LoadMeshAction(StringRef assetName,
-		StringRef filename,
-		StringRef basepath,
-		Shader &shader,
-		StringRef sceneOwner,
-		std::mutex &m_ResourceMutex,
-		AssetTable &m_AssetTable,
-		HashTable<String, int> &m_CurrentAssetCountPerScene,
-		int &m_CurrentAsset);
-
+				   StringRef filepath,
+				   StringRef basepath,
+				   StringRef sceneOwner,
+				   std::mutex& resourceMutex,
+				   AssetTable& assetTable,
+				   HashTable<String, int>& currentAssetCountPerScene,
+				   int &currentAsset);
+	~LoadMeshAction() override = default;
 
 	void OnStartTask() override;
-
 private:
-	std::string assetName;
-	std::string filename;
-	std::string basepath;
-	
-	std::string sceneOwner;
-
-	LoadMeshAction();
-	Shader& shader;
+	String m_AssetName;
+	String m_Filepath;
+	String m_Basepath;
+	String m_SceneOwnerName;
 	std::mutex& m_ResourceMutex;
 	AssetTable& m_AssetTable;
 	HashTable<String, int>& m_CurrentAssetCountPerScene;

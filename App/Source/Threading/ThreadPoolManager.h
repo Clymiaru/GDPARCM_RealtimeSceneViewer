@@ -18,7 +18,7 @@ public:
 
 	void startScheduler(std::string name, int numWorkers);
 	void stopScheduler(std::string name);
-	void scheduleTask(std::string name, IWorkerAction* action);
+	void ScheduleTask(std::string name, IWorkerAction* action);
 
 private:
 	ThreadPoolManager();

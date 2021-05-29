@@ -1,20 +1,20 @@
 ﻿#pragma once
 #include "AssetManagement/Asset.h"
-#include "RenderSystem/Mesh.h"
+#include <glad.h>
 
 class Model final : public Asset
 {
 public:
 	Model(StringRef name,
 		  StringRef filepath,
-		  StringRef basePath,
-		  Shader& shader,
-		  StringRef sceneOwner);
+		  StringRef basePath);
 	~Model() override;
+	
 	MAKE_ASSET(Model)
 
-	Mesh& GetMesh() const;
+	List<float>& GetVertices();
+	List<GLuint>& GetIndices();
 private:
-	String m_SceneOwner;
-	Mesh* m_MeshData;
+	List<float> m_Vertices;
+	List<GLuint> m_Indices;
 };

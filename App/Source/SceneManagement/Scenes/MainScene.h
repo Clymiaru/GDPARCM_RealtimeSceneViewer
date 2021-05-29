@@ -36,8 +36,8 @@ public:
 	MainScene();
 	~MainScene() override;
 
-	void RenderMeshes() override;
-	void RenderUI() override;
+	void RenderMeshes(Camera& camera) override;
+	void RenderUI(Camera& camera) override;
 	void Update(float deltaTime) override;
 
 private:

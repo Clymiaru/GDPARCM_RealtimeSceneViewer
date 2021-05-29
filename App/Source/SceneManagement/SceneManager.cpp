@@ -21,6 +21,11 @@ SceneManager& SceneManager::GetInstance()
 	return instance;
 }
 
+void SceneManager::SetMainCamera(Camera& mainCamera)
+{
+	m_Camera = &mainCamera;
+}
+
 void SceneManager::RegisterScenes(List<AScene*> scenes)
 {
 	for (AScene* scene : scenes)
@@ -61,7 +66,11 @@ void SceneManager::LoadScenes(List<String> sceneNames)
 		}
 		
 		auto* toLoad = GetSceneOfName(sceneName);
+		// mutex.lock();
 		m_LoadedScenes.push_back(toLoad);
+		// mutex.unlock();
+
+		// Way to get all asset count for view all.
 		toLoad->Load();
 	}
 }
@@ -89,7 +98,8 @@ void SceneManager::ActivateScenes(List<String> sceneNames)
 			LOG("Scene [" << sceneName << "] is already active!");
 			continue;
 		}
-		
+
+		(*foundLoadedScene)->SetCamera(*m_Camera);
 		m_ActiveScenes.push_back(*foundLoadedScene);
 	}
 }
@@ -125,7 +135,7 @@ void SceneManager::RenderScenesUI()
 {
 	for (AScene* activeScene : m_ActiveScenes)
 	{
-		activeScene->RenderUI();
+		activeScene->RenderUI(*m_Camera);
 	}
 }
 
@@ -133,7 +143,7 @@ void SceneManager::RenderScenesMeshes()
 {
 	for (AScene* activeScene : m_ActiveScenes)
 	{
-		activeScene->RenderMeshes();
+		activeScene->RenderMeshes(*m_Camera);
 	}
 }
 

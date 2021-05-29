@@ -38,7 +38,7 @@ void ThreadPoolManager::stopScheduler(std::string name)
 	}
 }
 
-void ThreadPoolManager::scheduleTask(std::string name, IWorkerAction* action)
+void ThreadPoolManager::ScheduleTask(std::string name, IWorkerAction* action)
 {
 	if (this->map.find(name) == this->map.end())// non existent name
 	{

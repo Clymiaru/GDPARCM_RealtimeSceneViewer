@@ -1,6 +1,10 @@
 ﻿#include "pch.h"
 #include "Scene3.h"
 
+#include "AssetManagement/AssetManager.h"
+
+#include "SceneManagement/SceneManager.h"
+
 Scene3::Scene3() :
 	AScene{ STRINGIFY(Scene3) }
 {
@@ -10,20 +14,42 @@ Scene3::~Scene3()
 {
 }
 
-void Scene3::RenderUI()
+void Scene3::RenderUI(Camera& camera)
 {
 }
 
-void Scene3::RenderMeshes()
+void Scene3::RenderMeshes(Camera& camera)
 {
-	this->mesh->Draw(m_Camera->GetViewProjectionMatrix());
+	for (auto* mesh : m_Meshes)
+	{
+		mesh->Draw(camera);
+	}
+}
+
+void Scene3::Update(float deltaTime)
+{
+	if (!m_AssetsLoaded)
+	{
+		if (AssetManager::GetInstance().GetAssetsLoaded(GetName()) >= 1)
+		{
+			m_AssetsLoaded = true;
+			Model& model = AssetManager::GetInstance().Acquire("Chair");
+			m_Meshes.push_back(new Mesh(model, *shader));
+		}
+	}
 }
 
 void Scene3::LoadResources()
 {
 	// Load 
 	this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
-	this->mesh = Mesh::Load("Content/3D_Models/", "Chair", *this->shader);
+
+	AssetManager::GetInstance().LoadAsync(GetName(),
+                                                  "Chair",
+                                                    "Content/3D_Models/Chair.obj",
+                                                   "Content/3D_Models/");
+	SceneManager::GetInstance().ActivateScenes({GetName()});
+	// this->mesh = Mesh::Load("Content/3D_Models/", "Chair", *this->shader);
 }
 
 void Scene3::UnloadResources()

@@ -5,14 +5,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
 
+#include "Camera.h"
+#include "Utils/Transform.h"
 #include "RenderSystem/IndexBuffer.h"
 #include "RenderSystem/VertexArray.h"
 #include "RenderSystem/VertexBuffer.h"
-
-
 #include "Shader.h"
 
-#include "Utils/Transform.h"
+#include "AssetManagement/Model/Model.h"
+
 
 class Mesh final
 {
@@ -20,17 +21,12 @@ public:
 	Mesh();
 	~Mesh();
 
-	Mesh(const List<float>& vertices,
-         const List<GLuint>& indices,
+	Mesh(Model& modelData,
 		 Shader& shader);
 
-	void Draw(const glm::mat4& viewProjection) const;
+	void Draw(const Camera& camera) const;
 
 	Transform& GetTransform();
-
-	static Mesh* Load(StringRef basePath,
-					  StringRef filename,
-					  Shader& shader);
 
 protected:
 	VertexArray* m_VAO;

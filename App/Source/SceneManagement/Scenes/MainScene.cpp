@@ -32,12 +32,12 @@ MainScene::~MainScene()
 {
 }
 
-void MainScene::RenderMeshes()
+void MainScene::RenderMeshes(Camera& camera)
 {
 	// this->mesh->Draw(m_Camera->GetViewProjectionMatrix());
 }
 
-void MainScene::RenderUI()
+void MainScene::RenderUI(Camera& camera)
 {
 	CreateDebugWindow();
 	SetDebugRespectiveAttributes();
@@ -77,10 +77,11 @@ void MainScene::Update(const float deltaTime)
 
 void MainScene::LoadResources()
 {
-	m_Camera = new Camera(glm::radians(45.0f), static_cast<float>(App::Width) / static_cast<float>(App::Height));
-
-	this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
-	this->mesh = Mesh::Load("Content/3D_Models/", "teapot", *this->shader);
+	SceneManager::GetInstance().ActivateScenes({GetName()});
+	// m_Camera = new Camera(glm::radians(45.0f), static_cast<float>(App::Width) / static_cast<float>(App::Height));
+	//
+	// this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
+	// this->mesh = Mesh::Load("Content/3D_Models/", "teapot", *this->shader);
 }
 
 void MainScene::UnloadResources()
