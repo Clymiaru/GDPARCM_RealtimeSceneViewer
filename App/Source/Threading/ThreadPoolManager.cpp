@@ -13,11 +13,11 @@ ThreadPoolManager::~ThreadPoolManager()
 	this->map.clear();
 }
 
-void ThreadPoolManager::startScheduler(std::string name)
+void ThreadPoolManager::startScheduler(std::string name, int numWorkers)
 {
 	if (this->map.find(name) == this->map.end())// non existent name
 	{
-		this->map[name] = new ThreadPool(name + " threads", 5);
+		this->map[name] = new ThreadPool(name + " threads", numWorkers);
 		this->map[name]->startScheduler();
 	}
 	else
