@@ -22,10 +22,15 @@ OutputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Libraries --
 Libraries = {}
-Libraries["SFML"] = "%{GameName}/Library/SFML"
 Libraries["glad"] = "%{GameName}/Library/glad"
+Libraries["glfw"] = "%{GameName}/Library/glfw"
+Libraries["glm"] = "%{GameName}/Library/glm"
+Libraries["ImGui"] = "%{GameName}/Library/ImGui"
+Libraries["tinyObjLoader"] = "%{GameName}/Library/tinyObjLoader"
 
 include "App/Library/glad"
+include "App/Library/glfw"
+include "App/Library/ImGui"
 
 project (GameName)
 	location (GameName)
@@ -42,74 +47,43 @@ project (GameName)
 
 	files {
 		"%{prj.name}/Source/**.h",
-		"%{prj.name}/Source/**.cpp"
+		"%{prj.name}/Source/**.cpp",
 	}
 
 	includedirs {
 		"%{prj.name}/Source",
 		"%{Libraries.glad}",
-		"%{Libraries.SFML}/include",
+		"%{Libraries.glfw}/include",
+		"%{Libraries.glm}",
+		"%{Libraries.ImGui}/include",
+		"%{Libraries.tinyObjLoader}",
 	}
 
 	defines {
 		"_CRT_SECURE_NO_WARNINGS",
-		"SFML_STATIC"
+		"GLFW_INCLUDE_NONE"
 	}
-
-	filter {"platforms:Win64", "configurations:Debug"}
-		libdirs {
-			"%{Libraries.SFML}/lib"
-	    }
-
-    postbuildcommands {
-        ("{COPY} %{prj.location}Library/SFML/bin/openal32.dll %{wks.location}Binaries/"..OutputDir.. "/%{GameName}")
-    }
-
 
 	filter "configurations:Debug"
 		defines "DEBUG"
-		buildoptions "/MDd"
+		buildoptions "/MTd"
 		runtime "Debug"
 		symbols "on"
 
 		links {
 			"glad",
-			"opengl32.lib",
-            "freetype.lib",
-            "winmm.lib",
-            "gdi32.lib",
-            "openal32.lib",
-            "flac.lib",
-            "vorbisenc.lib",
-            "vorbisfile.lib",
-            "vorbis.lib",
-            "ogg.lib",
-            "sfml-audio-s-d.lib",
-            "sfml-graphics-s-d.lib",
-            "sfml-window-s-d.lib",
-            "sfml-system-s-d.lib"
+			"GLFW",
+			"ImGui"
 		}
 
 	filter "configurations:Release"
 		defines "NDEBUG"
-		buildoptions "/MD"
+		buildoptions "/MT"
 		runtime "Release"
 		optimize "on"
 
 		links {
 			"glad",
-			"opengl32.lib",
-            "freetype.lib",
-            "winmm.lib",
-            "gdi32.lib",
-            "openal32.lib",
-            "flac.lib",
-            "vorbisenc.lib",
-            "vorbisfile.lib",
-            "vorbis.lib",
-            "ogg.lib",
-            "sfml-audio-s.lib",
-            "sfml-graphics-s.lib",
-            "sfml-window-s.lib",
-            "sfml-system-s.lib"
+			"GLFW",
+			"ImGui"
 		}

@@ -1,43 +1,50 @@
 #include "pch.h"
+#include "Core/App.h"
 
-#include <glad.h>
-#include <SFML/Graphics.hpp>
+#include "SceneManagement/SceneManager.h"
+#include "SceneManagement/Scenes/MainScene.h"
+#include "SceneManagement/Scenes/Scene0.h"
+#include "SceneManagement/Scenes/Scene1.h"
+#include "SceneManagement/Scenes/Scene2.h"
+#include "SceneManagement/Scenes/Scene3.h"
+#include "SceneManagement/Scenes/Scene4.h"
 
-#include "Utils/Log.h"
+#include "Threading/ThreadPoolManager.h"
+
+class RealtimeSceneViewer final : public App
+{
+public:
+	RealtimeSceneViewer() :
+		App(1280, 720)
+	{
+		// App specific initialization
+		SceneManager::GetInstance().RegisterScenes(
+        {
+			new MainScene(),
+			new Scene0(),
+			new Scene1(),
+			new Scene2(),
+			new Scene3(),
+			new Scene4(),
+        });
+	}
+
+	~RealtimeSceneViewer() override
+	{
+		// App specific deinitialization
+	}
+};
 
 int main()
 {
-	sf::Window window(sf::VideoMode(1280, 720),
-		"SFML OpenGL(glad) Integration!",
-		sf::Style::Default,
-		sf::ContextSettings(24));
-	window.setVerticalSyncEnabled(true);
+	ThreadPoolManager::GetInstance().startScheduler("Scene0", 5);
+	ThreadPoolManager::GetInstance().startScheduler("Scene1", 5);
+	ThreadPoolManager::GetInstance().startScheduler("Scene2", 5);
+	ThreadPoolManager::GetInstance().startScheduler("Scene3", 5);
+	ThreadPoolManager::GetInstance().startScheduler("Scene4", 5);
+	
+	RealtimeSceneViewer app = RealtimeSceneViewer();
+	app.Run();
 
-	LOG("Testing logging!");
-	ASSERT(true, "Window cannot be set to active!");
-	
-	gladLoadGL();
-	
-	bool isRunning = true;
-	while (isRunning)
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
-				isRunning = false;
-			}
-			else if (event.type == sf::Event::Resized)
-			{
-				glViewport(0, 0, event.size.width, event.size.height);
-			}
-		}
-
-		// Draw
-		glClearColor(1.0f, 0.0f, 0.0f ,1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-		window.display();
-	}
+	return 0;
 }
