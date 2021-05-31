@@ -59,8 +59,6 @@ void Scene2::LoadResources()
 void Scene2::UnloadResources()
 {
 	AssetManager::GetInstance().Unload(GetName(), "bunny");
-	this->shader->Unbind();
-	delete this->shader;
 
 	this->m_AssetsLoaded = false;
 }

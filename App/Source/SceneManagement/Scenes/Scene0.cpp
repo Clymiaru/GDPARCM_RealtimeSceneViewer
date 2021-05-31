@@ -67,9 +67,8 @@ void Scene0::LoadResources()
 
 void Scene0::UnloadResources()
 {
+	LOG("Hello Unload!");
 	AssetManager::GetInstance().Unload(GetName(), "teapot");
-	this->shader->Unbind();
-	delete this->shader;
-
+	
 	this->m_AssetsLoaded = false;
 }

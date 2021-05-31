@@ -5,12 +5,17 @@
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_internal.h>
 #include <glm/vec2.hpp>
+
+#include "AssetManagement/AssetManager.h"
+
 #include "Core/App.h"
 
 #include "SceneManagement/SceneManager.h"
 #include "SceneManagement/SceneNames.h"
 
 #include "Utils/Log.h"
+
+const int MAX_ASSETS_PER_SCENE = 5;
 
 constexpr float CalculateAverageProgress(std::array<float, MAX_MESH_SCENES> sceneProgress)
 {
@@ -34,7 +39,6 @@ MainScene::~MainScene()
 
 void MainScene::RenderMeshes(Camera& camera)
 {
-	// this->mesh->Draw(m_Camera->GetViewProjectionMatrix());
 }
 
 void MainScene::RenderUI(Camera& camera)
@@ -50,38 +54,37 @@ void MainScene::RenderUI(Camera& camera)
 void MainScene::Update(const float deltaTime)
 {
 	m_Ticks += deltaTime;
-
-	if (m_Ticks > 0.7f)
+	
+	for (int i = 0; i < MAX_MESH_SCENES; i++)
 	{
-		for (int i = 0; i < MAX_MESH_SCENES; i++)
+		if (m_ScenesStartedLoading[i])
 		{
-			if (m_ScenesStartedLoading[i])
+			if (m_ScenesLoadingProgress[i] < 1.0f)
 			{
-				if (m_ScenesLoadingProgress[i] < 1.0f)
-				{
-					// Fake loading simulation
-					m_ScenesLoadingProgress[i] += 0.05f;
-				}
+				String sceneName           = "Scene" + std::to_string(i);
+				const int assetsLoaded     = AssetManager::GetInstance().GetAssetsLoaded(sceneName);
+				const int maxAssets        = SceneManager::GetInstance().GetMaxAssetOfScene(sceneName);
+				m_ScenesLoadingProgress[i] = assetsLoaded / static_cast<float>(maxAssets);
+			}
 
-				if (m_ScenesLoadingProgress[i] >= 1.0f)
+			if (m_ScenesLoadingProgress[i] >= 1.0f)
+			{
+				String sceneName           = "Scene" + std::to_string(i);
+				// When loading is complete, the scene is considered loaded
+				m_ScenesFinishedLoading[i] = true;
+				m_ScenesStartedLoading[i] = false;
+				if (m_ScenesActive[i])
 				{
-					// When loading is complete, the scene is considered loaded
-					m_ScenesFinishedLoading[i] = true;
-					m_ScenesStartedLoading[i] = false;
+					SceneManager::GetInstance().MarkScenesToActivate({sceneName});
 				}
 			}
 		}
-		m_Ticks = 0.0f;
 	}
 }
 
 void MainScene::LoadResources()
 {
-	SceneManager::GetInstance().ActivateScenes({GetName()});
-	// m_Camera = new Camera(glm::radians(45.0f), static_cast<float>(App::Width) / static_cast<float>(App::Height));
-	//
-	// this->shader = new Shader("Content/Shaders/vertShader.glsl", "Content/Shaders/fragShader.glsl");
-	// this->mesh = Mesh::Load("Content/3D_Models/", "teapot", *this->shader);
+	SceneManager::GetInstance().MarkScenesToActivate({GetName()});
 }
 
 void MainScene::UnloadResources()
@@ -117,8 +120,8 @@ void MainScene::CreateDebugWindow()
 	{
 		if (ImGui::TreeNode("Camera"))
 		{
-			ImGui::DragFloat3("Position", &m_DebugData.CameraPosition.x, 0.001f);
-			ImGui::DragFloat3("Rotation", &m_DebugData.CameraRotation.x, 0.001f);
+			ImGui::DragFloat3("Position", &m_DebugData.CameraPosition.x, 0.1f);
+			ImGui::DragFloat3("Rotation", &m_DebugData.CameraRotation.x, 0.1f);
 
 			if (ImGui::Button("Reset", {100.0f, 20.0f}))
 			{
@@ -159,7 +162,7 @@ void MainScene::CreateViewAllButton(const glm::vec2& size,
 									 ImGuiCond_Once);
 
 	const String buttonName = m_ViewAllScenes ? "Hide All" : "View All";
-	
+
 	if (!ImGui::Begin("ViewHide All Button", nullptr, windowFlags))
 	{
 		ImGui::End();
@@ -262,7 +265,6 @@ void MainScene::CreateViewSceneButton(const int sceneID,
 	const String viewSceneName = String("View Scene ") + std::to_string(sceneID);
 
 	const bool sceneIsActive = m_ScenesActive[sceneID];
-	const bool sceneIsLoaded = m_ScenesFinishedLoading[sceneID];
 	
 	if (sceneIsActive)
 	{
@@ -298,7 +300,7 @@ void MainScene::CreateLoadSceneButton(int sceneID,
 	const String loadSceneName = String("Load Scene ") + std::to_string(sceneID);
 	String sceneButtonName = "";
 
-	ImGui::PushStyleColor(ImGuiCol_Button, {0.6f, 0.6f, 0.2f, 1.0f});
+	ImGui::PushStyleColor(ImGuiCol_Button, {0.8f, 0.8f, 0.4f, 1.0f});
 	if (ImGui::Button(loadSceneName.c_str(), {size.x, size.y}))
 	{
 		LoadScene(sceneID);
@@ -334,21 +336,41 @@ void MainScene::CreateMainSceneLoadingBar(const glm::vec2& size) const
                                    viewport->WorkPos.y + viewport->Size.y / 2.0f),
                                      ImGuiCond_Once);
 
+	if (m_ViewAllScenes)
+	{
+		// Show summary loading bar
+		const float averageLoadingProgress = CalculateAverageProgress(m_ScenesLoadingProgress);
 
-	bool isThereAnActiveMesh = false;
+		if (averageLoadingProgress < 1.0f)
+		{
+			if (!ImGui::Begin("GlobalLoadingBar", nullptr, windowFlags))
+			{
+				ImGui::End();
+			}
+			else
+			{
+				ImGui::ProgressBar(averageLoadingProgress,
+                        {size.x, size.y});
+ 
+				ImGui::End();
+			}
+		}
+		return;
+	}
+
+	bool isThereAnActiveScene = false;
 	int sceneID = -1;
 	for (int i = 0; i < MAX_MESH_SCENES; i++)
 	{
 		if (m_ScenesActive[i])
 		{
-			isThereAnActiveMesh = true;
+			isThereAnActiveScene = true;
 			sceneID = i;
 			break;
 		}
 	}
-
 	
-	if (isThereAnActiveMesh)
+	if (isThereAnActiveScene)
 	{
 		// Show loading bar of that scene
 		if (m_ScenesLoadingProgress[sceneID] < 1.0f)
@@ -378,37 +400,17 @@ void MainScene::CreateMainSceneLoadingBar(const glm::vec2& size) const
 			}
 		}
 	}
-	else if (m_ViewAllScenes)
-	{
-		// Show summary loading bar
-		const float averageLoadingProgress = CalculateAverageProgress(m_ScenesLoadingProgress);
-
-		if (averageLoadingProgress < 1.0f)
-		{
-			if (!ImGui::Begin("GlobalLoadingBar", nullptr, windowFlags))
-			{
-				ImGui::End();
-			}
-			else
-			{
-				ImGui::ProgressBar(averageLoadingProgress,
-                        {size.x, size.y});
- 
-				ImGui::End();
-			}
-		}
-	}
 
 	// show nothing
 }
 
 void MainScene::ViewAllScenes()
 {
-	// SceneManager::GetInstance().ActivateScenes({ SceneNames::SCENE_0,
-	// 													  SceneNames::SCENE_1,
-	// 													  SceneNames::SCENE_2,
-	// 													  SceneNames::SCENE_3,
-	// 													  SceneNames::SCENE_4});
+	SceneManager::GetInstance().MarkScenesToActivate({ SceneNames::SCENE_0,
+															  SceneNames::SCENE_1,
+															  SceneNames::SCENE_2,
+															  SceneNames::SCENE_3,
+															  SceneNames::SCENE_4});
 	
 	for (int i = 0; i < m_ScenesActive.size(); i++)
 	{
@@ -419,11 +421,11 @@ void MainScene::ViewAllScenes()
 
 void MainScene::HideAllScenes()
 {
-	// SceneManager::GetInstance().ActivateScenes({ SceneNames::SCENE_0,
- //                                                          SceneNames::SCENE_1,
- //                                                          SceneNames::SCENE_2,
- //                                                          SceneNames::SCENE_3,
- //                                                          SceneNames::SCENE_4});
+	SceneManager::GetInstance().MarkScenesToDeactivate({ SceneNames::SCENE_0,
+		                                                           SceneNames::SCENE_1,
+		                                                           SceneNames::SCENE_2,
+		                                                           SceneNames::SCENE_3,
+		                                                           SceneNames::SCENE_4});
 	
 	for (int i = 0; i < m_ScenesActive.size(); i++)
 	{
@@ -434,28 +436,47 @@ void MainScene::HideAllScenes()
 
 void MainScene::ViewScene(const int sceneID)
 {
+	const String viewingSceneName = "Scene" + std::to_string(sceneID);
+
 	for (int i = 0; i < m_ScenesActive.size(); i++)
 	{
-		if (i != sceneID && m_ScenesFinishedLoading[i])
+		const String sceneName = "Scene" + std::to_string(i);
+		if (i != sceneID)
 		{
 			// Make other scenes inactive
-			m_ScenesActive[i] = false;			
+			m_ScenesActive[i] = false;
+
+			if (m_ScenesFinishedLoading[i])
+			{
+				SceneManager::GetInstance().MarkScenesToDeactivate({sceneName});
+			}
 		}
 	}
 	
 	// Make this scene active
+	
 	m_ScenesActive[sceneID] = true;
+	if (m_ScenesFinishedLoading[sceneID])
+	{
+		SceneManager::GetInstance().MarkScenesToActivate({viewingSceneName});
+	}
 	LOG("View scene " << sceneID);
 }
 
 void MainScene::LoadScene(const int sceneID)
 {
+	const String sceneName          = "Scene" + std::to_string(sceneID);
+	SceneManager::GetInstance().LoadScenes({sceneName});
+	
 	m_ScenesStartedLoading[sceneID] = true;
 	LOG("Load scene " << sceneID);
 }
 
 void MainScene::UnloadScene(const int sceneID)
 {
+	const String sceneName = "Scene" + std::to_string(sceneID);
+	SceneManager::GetInstance().UnloadScenes({sceneName});
+	
 	m_ScenesLoadingProgress[sceneID] = 0.0f;
 	m_ScenesFinishedLoading[sceneID] = false;
 	m_ScenesActive[sceneID] = false;
