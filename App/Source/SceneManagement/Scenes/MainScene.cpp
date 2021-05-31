@@ -406,15 +406,14 @@ void MainScene::CreateMainSceneLoadingBar(const glm::vec2& size) const
 
 void MainScene::ViewAllScenes()
 {
-	SceneManager::GetInstance().MarkScenesToActivate({ SceneNames::SCENE_0,
-															  SceneNames::SCENE_1,
-															  SceneNames::SCENE_2,
-															  SceneNames::SCENE_3,
-															  SceneNames::SCENE_4});
-	
 	for (int i = 0; i < m_ScenesActive.size(); i++)
 	{
-		m_ScenesActive[i] = true;			
+		m_ScenesActive[i] = true;
+		String sceneName = "Scene" + std::to_string(i);
+		if (m_ScenesFinishedLoading[i])
+		{
+			SceneManager::GetInstance().MarkScenesToActivate({sceneName});
+		}
 	}
 	m_ViewAllScenes = true;
 }
