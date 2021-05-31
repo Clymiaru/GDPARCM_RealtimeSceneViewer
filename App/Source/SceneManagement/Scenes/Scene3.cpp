@@ -59,8 +59,6 @@ void Scene3::LoadResources()
 void Scene3::UnloadResources()
 {
 	AssetManager::GetInstance().Unload(GetName(), "Chair");
-	this->shader->Unbind();
-	delete this->shader;
 
 	this->m_AssetsLoaded = false;
 }

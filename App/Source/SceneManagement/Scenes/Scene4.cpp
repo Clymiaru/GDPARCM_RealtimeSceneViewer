@@ -59,8 +59,6 @@ void Scene4::LoadResources()
 void Scene4::UnloadResources()
 {
 	AssetManager::GetInstance().Unload(GetName(), "Grenade");
-	this->shader->Unbind();
-	delete this->shader;
 
 	this->m_AssetsLoaded = false;
 }

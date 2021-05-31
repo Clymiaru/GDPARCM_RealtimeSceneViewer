@@ -66,16 +66,49 @@ void SceneManager::LoadScenes(List<String> sceneNames)
 		}
 		
 		auto* toLoad = GetSceneOfName(sceneName);
-		// mutex.lock();
 		m_LoadedScenes.push_back(toLoad);
-		// mutex.unlock();
 
 		// Way to get all asset count for view all.
 		toLoad->Load();
 	}
 }
 
-void SceneManager::ActivateScenes(List<String> sceneNames)
+void SceneManager::ActivateScenes()
+{
+	while (!m_ActivateSceneQueue.empty())
+	{
+		auto* scene = m_ActivateSceneQueue.front();
+		m_ActivateSceneQueue.pop();
+
+		m_ActiveScenes.push_back(scene);
+	}
+}
+
+void SceneManager::DeactivateScenes()
+{
+	while (!m_DeactivateSceneQueue.empty())
+	{
+		auto* scene = m_DeactivateSceneQueue.front();
+		m_DeactivateSceneQueue.pop();
+
+		int index = -1;
+		for (int i = 0; i < m_ActiveScenes.size(); i++)
+		{
+			if (m_ActiveScenes[i]->GetName() == scene->GetName())
+			{
+				index = i;
+				break;
+			}
+		}
+
+		if (index != -1)
+		{
+			m_ActiveScenes.erase(m_ActiveScenes.begin() + index);
+		}
+	}
+}
+
+void SceneManager::MarkScenesToActivate(List<String> sceneNames)
 {
 	for (String sceneName : sceneNames)
 	{
@@ -88,7 +121,7 @@ void SceneManager::ActivateScenes(List<String> sceneNames)
 		auto foundLoadedScene = FindSceneOfNameInList(sceneName, m_LoadedScenes);
 		if (foundLoadedScene == m_LoadedScenes.end())
 		{
-			LOG("Scene [" << sceneName << "] is not yet loaded!");
+			//LOG("Scene [" << sceneName << "] is not yet loaded!");
 			continue;
 		}
 
@@ -100,7 +133,34 @@ void SceneManager::ActivateScenes(List<String> sceneNames)
 		}
 
 		(*foundLoadedScene)->SetCamera(*m_Camera);
-		m_ActiveScenes.push_back(*foundLoadedScene);
+		m_ActivateSceneQueue.push(*foundLoadedScene);
+	}
+}
+
+void SceneManager::MarkScenesToDeactivate(List<String> sceneNames)
+{
+	for (String sceneName : sceneNames)
+	{
+		if (!IsSceneRegistered(sceneName))
+		{
+			LOG("Scene [" << sceneName << "] is not yet registered!");
+			continue;
+		}
+		
+		auto foundLoadedScene = FindSceneOfNameInList(sceneName, m_LoadedScenes);
+		if (foundLoadedScene == m_LoadedScenes.end())
+		{
+			//LOG("Scene [" << sceneName << "] is not yet loaded!");
+			continue;
+		}
+
+		auto foundActiveScene = FindSceneOfNameInList(sceneName, m_ActiveScenes);
+		if (foundActiveScene != m_ActiveScenes.end())
+		{
+			m_DeactivateSceneQueue.push(*foundLoadedScene);
+			continue;
+		}
+		LOG("Scene [" << sceneName << "] is not yet activated!");
 	}
 }
 
@@ -126,9 +186,22 @@ void SceneManager::UnloadScenes(List<String> sceneNames)
 		{
 			m_ActiveScenes.erase(foundActiveScene);
 		}
-		
+
 		(*foundLoadedScene)->Unload();
+		m_LoadedScenes.erase(foundLoadedScene);
+
 	}
+}
+
+int SceneManager::GetMaxAssetOfScene(StringRef sceneName)
+{
+	if (!IsSceneRegistered(sceneName))
+	{
+		LOG("Scene [" << sceneName << "] is not yet registered!");
+		return -1;
+	}
+
+	return m_SceneTable[sceneName]->GetMaxAssets();
 }
 
 void SceneManager::RenderScenesUI()

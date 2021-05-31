@@ -59,8 +59,6 @@ void Scene1::LoadResources()
 void Scene1::UnloadResources()
 {
 	AssetManager::GetInstance().Unload(GetName(), "A2");
-	this->shader->Unbind();
-	delete this->shader;
 
 	this->m_AssetsLoaded = false;
 }

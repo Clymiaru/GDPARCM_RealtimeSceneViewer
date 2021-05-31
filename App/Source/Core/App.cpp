@@ -50,13 +50,14 @@ void App::Run()
 	while (!glfwWindowShouldClose(m_Window))
 	{
 		const double prev = now;
-		
+		Initialize();	
 		glfwPollEvents();
 
 		now = glfwGetTime();
 		Update(now - prev);
 
 		Render();
+		Deinitialize();
 	}
 }
 
@@ -96,6 +97,16 @@ void App::InitImGui() const
 	ImGui_ImplOpenGL3_Init((char *)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
 }
 
+void App::Initialize()
+{
+	SceneManager::GetInstance().ActivateScenes();
+}
+
+void App::Deinitialize()
+{
+	SceneManager::GetInstance().DeactivateScenes();
+}
+
 void App::Update(float deltaTime)
 {
 	m_Ticks += deltaTime;
@@ -116,9 +127,9 @@ void App::Render()
 	glEnable(GL_DEPTH_TEST);  
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
-		
-	glClearColor(0.0f, 0.0f, 0.1f, 1.00f);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(1.0f, 1.0f, 0.1f, 1.00f);
 
 	glCullFace(GL_FRONT);  
 	glFrontFace(GL_CCW); 

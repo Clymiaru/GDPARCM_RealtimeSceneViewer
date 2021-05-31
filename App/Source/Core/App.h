@@ -22,8 +22,10 @@ private:
 	static void InitGlad();
 	void InitImGui() const;
 
+	void Initialize();
 	void Update(float deltaTime);
 	void Render();
+	void Deinitialize();
 
 	double m_Ticks = 0.0;
 	Uint32 m_Framecount = 0;
