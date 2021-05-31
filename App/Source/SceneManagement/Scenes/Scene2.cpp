@@ -48,7 +48,7 @@ void Scene2::Update(float deltaTime)
 				m_Meshes[0]->GetTransform().Scale(30.0f, 30.0f, 30.0f);
 
 				// human 
-				m_Meshes[1]->GetTransform().MoveX(15.0f);
+				m_Meshes[1]->GetTransform().MoveX(30.0f);
 				m_Meshes[1]->GetTransform().MoveZ(10.0f);
 
 				// car

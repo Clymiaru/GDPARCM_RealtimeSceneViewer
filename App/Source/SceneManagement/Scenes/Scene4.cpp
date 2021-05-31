@@ -33,8 +33,10 @@ void Scene4::Update(float deltaTime)
 		if (AssetManager::GetInstance().GetAssetsLoaded(GetName()) >= 1)
 		{
 			m_AssetsLoaded = true;
-			Model& model = AssetManager::GetInstance().Acquire("Grenade");
-			m_Meshes.push_back(new Mesh(model, *shader));
+			Model& model_grenade = AssetManager::GetInstance().Acquire("Grenade");
+			m_Meshes.push_back(new Mesh(model_grenade, *shader));
+
+			m_Meshes[0]->GetTransform().MoveY(30.0f);
 		}
 	}
 }
@@ -58,6 +60,7 @@ void Scene4::LoadResources()
 
 void Scene4::UnloadResources()
 {
+	m_Meshes.clear();
 	AssetManager::GetInstance().Unload(GetName(), "Grenade");
 
 	this->m_AssetsLoaded = false;

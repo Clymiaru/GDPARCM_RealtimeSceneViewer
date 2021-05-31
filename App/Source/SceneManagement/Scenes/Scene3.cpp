@@ -33,8 +33,20 @@ void Scene3::Update(float deltaTime)
 		if (AssetManager::GetInstance().GetAssetsLoaded(GetName()) >= 1)
 		{
 			m_AssetsLoaded = true;
-			Model& model = AssetManager::GetInstance().Acquire("Chair");
-			m_Meshes.push_back(new Mesh(model, *shader));
+
+			Model& model_chair = AssetManager::GetInstance().Acquire("Chair");
+			m_Meshes.push_back(new Mesh(model_chair, *shader));
+
+			Model& model_Axe = AssetManager::GetInstance().Acquire("Axe");
+			m_Meshes.push_back(new Mesh(model_Axe, *shader));
+
+			// Chair
+			m_Meshes[0]->GetTransform().MoveY(-50.0f);
+
+			// Axe
+			m_Meshes[1]->GetTransform().MoveX(50.0f);
+			m_Meshes[1]->GetTransform().MoveY(-30.0f);
+
 		}
 	}
 }
@@ -54,11 +66,18 @@ void Scene3::LoadResources()
                                                     "Content/3D_Models/Chair.obj",
                                                    "Content/3D_Models/");
 	
+	AssetManager::GetInstance().LoadAsync(GetName(),
+                                                  "Axe",
+                                                    "Content/3D_Models/Axe.obj",
+                                                   "Content/3D_Models/");
+	
 }
 
 void Scene3::UnloadResources()
 {
+	m_Meshes.clear();
 	AssetManager::GetInstance().Unload(GetName(), "Chair");
+	AssetManager::GetInstance().Unload(GetName(), "Axe");
 
 	this->m_AssetsLoaded = false;
 }
