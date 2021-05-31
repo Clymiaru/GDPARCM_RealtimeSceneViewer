@@ -24,6 +24,11 @@ void AScene::SetCamera(Camera& mainCamera)
 	m_Camera = &mainCamera;
 }
 
+int AScene::GetMaxAssets()
+{
+	return 0;
+}
+
 StringRef AScene::GetName() const
 {
 	return m_Name;

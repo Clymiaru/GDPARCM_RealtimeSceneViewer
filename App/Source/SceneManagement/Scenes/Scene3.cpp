@@ -39,6 +39,11 @@ void Scene3::Update(float deltaTime)
 	}
 }
 
+int Scene3::GetMaxAssets()
+{
+	return this->maxAssets;
+}
+
 void Scene3::LoadResources()
 {
 	// Load 
@@ -48,10 +53,14 @@ void Scene3::LoadResources()
                                                   "Chair",
                                                     "Content/3D_Models/Chair.obj",
                                                    "Content/3D_Models/");
-	SceneManager::GetInstance().ActivateScenes({GetName()});
-	// this->mesh = Mesh::Load("Content/3D_Models/", "Chair", *this->shader);
+	
 }
 
 void Scene3::UnloadResources()
 {
+	AssetManager::GetInstance().Unload(GetName(), "Chair");
+	this->shader->Unbind();
+	delete this->shader;
+
+	this->m_AssetsLoaded = false;
 }

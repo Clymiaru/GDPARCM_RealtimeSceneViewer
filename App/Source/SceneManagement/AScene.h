@@ -13,12 +13,14 @@ public:
 	void Load();
 	void Unload();
 	void SetCamera(Camera& mainCamera);
-
+	
+	virtual int GetMaxAssets();
 	virtual void RenderMeshes(Camera& camera) = 0;
 	virtual void RenderUI(Camera& camera) = 0;
 	virtual void Update(float deltaTime) = 0;
 	
 	StringRef GetName() const;
+
 private:
 	virtual void LoadResources() = 0;
 	virtual void UnloadResources() = 0;

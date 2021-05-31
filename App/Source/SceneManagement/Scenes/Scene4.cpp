@@ -39,6 +39,11 @@ void Scene4::Update(float deltaTime)
 	}
 }
 
+int Scene4::GetMaxAssets()
+{
+	return this->maxAssets;
+}
+
 void Scene4::LoadResources()
 {
 	// Load 
@@ -48,10 +53,14 @@ void Scene4::LoadResources()
                                                   "Grenade",
                                                     "Content/3D_Models/Grenade.obj",
                                                    "Content/3D_Models/");
-	SceneManager::GetInstance().ActivateScenes({GetName()});
-	// this->mesh = Mesh::Load("Content/3D_Models/", "Grenade", *this->shader);
+	
 }
 
 void Scene4::UnloadResources()
 {
+	AssetManager::GetInstance().Unload(GetName(), "Grenade");
+	this->shader->Unbind();
+	delete this->shader;
+
+	this->m_AssetsLoaded = false;
 }
