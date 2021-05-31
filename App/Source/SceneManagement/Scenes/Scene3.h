@@ -14,7 +14,7 @@ public:
 	void RenderUI(Camera& camera) override;
 	void RenderMeshes(Camera& camera) override;
 	void Update(float deltaTime) override;
-
+	int GetMaxAssets() override;
 
 private:
 	void LoadResources() override;
@@ -22,4 +22,5 @@ private:
 
 	Mesh* mesh = nullptr;
 	Shader* shader = nullptr;
+	int const maxAssets = 1;
 };
