@@ -129,7 +129,7 @@ void App::Render()
 	glEnable(GL_BLEND);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(1.0f, 1.0f, 0.1f, 1.00f);
+	glClearColor(m_BGColor[0], m_BGColor[1], m_BGColor[2], 1.0f);
 
 	glCullFace(GL_FRONT);  
 	glFrontFace(GL_CCW); 
@@ -167,7 +167,21 @@ void App::Render()
 		ImGui::TextColored({1.0f, 1.0f, 0.0f, 1.0f}, "FPS: %d", m_FPS);
 		ImGui::End();
 	}
+	
+#ifdef DEBUG
+	windowFlags = 0;
+	windowFlags |= ImGuiWindowFlags_NoScrollbar;
 
+	if(!ImGui::Begin("Color Picker", nullptr, windowFlags))
+	{
+		ImGui::End();
+	}
+	else
+	{
+		ImGui::ColorEdit3("BG Color", m_BGColor);
+		ImGui::End();
+	}
+#endif DEBUG
 	
 	SceneManager::GetInstance().RenderScenesUI();
 

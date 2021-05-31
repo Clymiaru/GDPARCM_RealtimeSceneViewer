@@ -27,6 +27,7 @@ private:
 	void Render();
 	void Deinitialize();
 
+	float m_BGColor[3] = {1.0f, 1.0f, 1.0f};
 	double m_Ticks = 0.0;
 	Uint32 m_Framecount = 0;
 	Uint32 m_FPS = 0;
