@@ -40,13 +40,20 @@ void Scene3::Update(float deltaTime)
 			Model& model_Axe = AssetManager::GetInstance().Acquire("Axe");
 			m_Meshes.push_back(new Mesh(model_Axe, *shader));
 
+			Model& model_character = AssetManager::GetInstance().Acquire("character");
+			m_Meshes.push_back(new Mesh(model_character, *shader));
+
 			// Chair
 			m_Meshes[0]->GetTransform().MoveY(-50.0f);
+			m_Meshes[0]->GetTransform().RotateY(180.0f);
 
 			// Axe
 			m_Meshes[1]->GetTransform().MoveX(50.0f);
 			m_Meshes[1]->GetTransform().MoveY(-30.0f);
 
+			// chopper
+			m_Meshes[2]->GetTransform().MoveX(-120.0f);
+			m_Meshes[2]->GetTransform().Scale(30.0f, 30.0f, 30.0f);
 		}
 	}
 }
@@ -71,6 +78,11 @@ void Scene3::LoadResources()
                                                     "Content/3D_Models/Axe.obj",
                                                    "Content/3D_Models/");
 	
+	AssetManager::GetInstance().LoadAsync(GetName(),
+                                                  "character",
+                                                    "Content/3D_Models/character.obj",
+                                                   "Content/3D_Models/");
+	
 }
 
 void Scene3::UnloadResources()
@@ -78,6 +90,7 @@ void Scene3::UnloadResources()
 	m_Meshes.clear();
 	AssetManager::GetInstance().Unload(GetName(), "Chair");
 	AssetManager::GetInstance().Unload(GetName(), "Axe");
+	AssetManager::GetInstance().Unload(GetName(), "character");
 
 	this->m_AssetsLoaded = false;
 }

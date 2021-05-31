@@ -22,5 +22,5 @@ private:
 
 	Mesh* mesh = nullptr;
 	Shader* shader = nullptr;
-	int const maxAssets = 2;
+	int const maxAssets = 3;
 };

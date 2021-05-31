@@ -21,5 +21,5 @@ private:
 	void UnloadResources() override;
 	Mesh* mesh = nullptr;
 	Shader* shader = nullptr;
-	int const maxAssets = 1;
+	int const maxAssets = 3;
 };
