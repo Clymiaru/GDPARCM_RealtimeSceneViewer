@@ -29,5 +29,5 @@ private:
 
 	Shader* shader = nullptr;
 	bool m_AssetsLoaded = false;
-	int const maxAssets = 1;
+	int const maxAssets = 3;
 };
